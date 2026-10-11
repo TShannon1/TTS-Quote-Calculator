@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tony's Tech Support – Quote Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Brand: rust #8f2a0b on warm cream. Contrast tuned for readability (body text >= 9:1, muted text >= 7:1). */
+:root{--bg:#fbf6f2;--card:#fff;--ink:#1f1410;--mut:#4f4039;--line:#d9c9bf;--fld:#85705f;--fldbg:#fffdfb;--acc:#8f2a0b;--onacc:#fff;--acc2:#fdeee7;--ok:#17592f;--bad:#a4170f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17110e;--card:#241b17;--ink:#f8efea;--mut:#d3c2b9;--line:#4a3a33;--fld:#9a8478;--fldbg:#1a130f;--acc:#ff9a76;--onacc:#1b0d07;--acc2:#3a2119;--ok:#7ddc9f;--bad:#ff8f86}}
+:root[data-theme="dark"]{--bg:#17110e;--card:#241b17;--ink:#f8efea;--mut:#d3c2b9;--line:#4a3a33;--fld:#9a8478;--fldbg:#1a130f;--acc:#ff9a76;--onacc:#1b0d07;--acc2:#3a2119;--ok:#7ddc9f;--bad:#ff8f86}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.6 "Atkinson Hyperlegible",Verdana,system-ui,sans-serif}
+header{padding:28px 20px 8px;max-width:1100px;margin:auto}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700;margin:0 0 6px}h3{font-size:1.05rem;font-weight:700;margin:20px 0 6px}
+.sub{color:var(--mut);margin:0}
+main{max-width:1100px;margin:auto;padding:12px 20px 60px;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+nav.steps{display:flex;gap:6px;flex-wrap:wrap;max-width:1100px;margin:8px auto 0;padding:0 20px}
+nav.steps button{border:1.5px solid var(--fld);background:var(--card);color:var(--ink);padding:7px 14px;border-radius:999px;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer}
+nav.steps button.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}nav.steps button.skip{opacity:.6;text-decoration:line-through}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;box-shadow:0 1px 3px rgba(60,30,15,.08)}
+label{display:block;margin:12px 0 4px;font-weight:700;font-size:.97rem}
+textarea{width:100%;padding:.6rem .8rem;border:2px solid var(--fld);border-radius:8px;background:var(--fldbg);color:var(--ink);font:inherit;resize:vertical;min-height:5rem}
+textarea:focus-visible{outline:4px solid var(--acc);outline-offset:3px}
+input,select{width:100%;padding:11px 12px;border:1.5px solid var(--fld);border-radius:8px;background:var(--fldbg);color:var(--ink);font:inherit}
+input[type=checkbox],input[type=radio]{width:auto;margin:4px 8px 0 0;accent-color:var(--acc);transform:scale(1.2)}
+.opt{display:flex;align-items:flex-start;gap:4px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:400}
+.opt small{color:var(--mut);display:block;font-size:.9rem}.opt .p{margin-left:auto;white-space:nowrap;font-weight:700;padding-left:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.na{background:var(--acc2);padding:9px 12px;border-radius:8px;margin-bottom:12px;border:1px solid var(--line)}
+.na label{margin:0;font-weight:700;display:flex;align-items:center}
+.btns{display:flex;justify-content:space-between;margin-top:22px;gap:10px;flex-wrap:wrap}
+button.b{background:var(--acc);color:var(--onacc);border:0;padding:11px 20px;border-radius:8px;font:inherit;font-weight:700;cursor:pointer}
+button.g{background:transparent;color:var(--ink);border:1.5px solid var(--fld);padding:10px 18px;border-radius:8px;font:inherit;font-weight:700;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+a{color:var(--acc);font-weight:700}
+aside .card{position:sticky;top:12px}
+table{width:100%;border-collapse:collapse;font-size:.94rem}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
+.tot td{font-weight:700;font-size:1.05rem;border-bottom:0}.note{font-size:.9rem;color:var(--mut);margin:6px 0}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.cmp div{border:1.5px solid var(--line);border-radius:8px;padding:10px}.cmp .win{border-color:var(--ok);background:var(--acc2)}
+.info{border:1px solid var(--line);border-radius:8px;margin:10px 0;overflow:hidden}
+.info>div{padding:9px 12px;border-bottom:1px solid var(--line);font-size:.93rem}.info>div:last-child{border-bottom:0}
+.info>div.sel{background:var(--acc2);box-shadow:inset 4px 0 0 var(--acc)}.info b{display:block}.info span{color:var(--mut)}
+.rec{border-left:5px solid var(--acc);background:var(--acc2);border-radius:8px;padding:12px 14px;margin:14px 0}.rec p{margin:4px 0}
+.pop{border:2px solid var(--acc);background:var(--acc2);border-radius:10px;padding:12px 14px;margin:12px 0;animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}@media(max-width:620px){.two,.row{grid-template-columns:1fr}}
+.two>div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.92rem}.two b{display:block;margin-bottom:2px}
+.price{font-weight:700;color:var(--acc)}.tag{font-weight:400;font-size:.8em;color:var(--mut)}th[colspan]{text-align:left;background:var(--acc2);font-size:.9rem}.sheet a{color:#8f2a0b}.sheet .tag{color:#444}.sheet th[colspan]{background:#eee}
+.m{display:none;color:var(--acc)}body.marg .m{display:table-cell}body.marg div.m{display:block}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.stepper input{width:7rem;text-align:center}.stepper button.g{min-width:3rem}
+.ctawrap{max-width:1100px;margin:12px auto 0;padding:0 20px}.cta{margin-top:0;padding:18px 20px;border:2px solid var(--acc);border-radius:12px;background:var(--acc2)}.cta h3{margin-top:0}.cta ol{padding-left:1.4rem;margin:8px 0 14px}.cta li{margin-bottom:4px}
+.beta{border:2px solid var(--acc);border-left-width:8px;border-radius:12px;background:var(--acc2);padding:16px 20px}.beta h2{font-size:1.25rem;margin:0 0 8px}.beta p{margin:0 0 8px}.beta .betaact{margin-top:12px}.beta .badge{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:999px;padding:0 .7em;margin-right:.5em;font-size:.85em}
+.disc{border:1px solid var(--line);border-left:5px solid var(--acc);background:var(--acc2);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:.95rem;line-height:1.5}.sheet .disc{background:#f6f6f6;border-color:#999;border-left-color:#8f2a0b;color:#111}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}.modal[hidden]{display:none}.modal-box{background:var(--card);color:var(--ink);border:2px solid var(--acc);border-radius:12px;padding:22px;max-width:34rem;width:100%;max-height:90vh;overflow:auto}
+@media print{.modal{display:none!important}}
+.warn{color:var(--bad);font-weight:700}
+#quote{display:none}
+.sheet{background:#fff;color:#111;padding:28px;border:1px solid var(--line);border-radius:6px;margin-top:14px;font-size:16px}
+.sheet h2,.sheet h3,.sheet p,.sheet td,.sheet th,.sheet li{color:#111}.sheet .note{color:#444}
+.sheet table td,.sheet table th{border-color:#ccc}.sig{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:40px}.sig div{border-top:1px solid #111;padding-top:4px;font-size:.85rem}
+.terms{page-break-before:always;font-size:.85rem}.terms li{margin-bottom:4px}
+@media print{body>header,nav.steps,main>section,aside,.btns,.noprint{display:none!important}main{display:block;padding:0}#quote{display:block!important}.sheet{border:0;padding:0;margin:0}.m,body.marg .m{display:none!important}:root{--bg:#fff}body{background:#fff}}
+
+/* ---- Accessibility layer: bigger type, bigger targets, stronger focus, optional high contrast ---- */
+html{font-size:112.5%;-webkit-text-size-adjust:100%}
+html[data-size="2"]{font-size:131.25%}
+html[data-size="3"]{font-size:150%}
+:root{--fld:#6b5646}
+body{letter-spacing:.01em}
+h1{font-size:clamp(1.75rem,4vw,2.5rem)}h2{font-size:1.5rem}h3{font-size:1.2rem}
+.sub{font-size:1.05rem}
+label{font-size:1.05rem;margin:16px 0 6px}
+table,td,th,.note,.opt small,.info>div,.two>div{font-size:1rem}
+.note{color:var(--mut)}
+a{text-decoration:underline;text-underline-offset:.2em}
+input,select{min-height:3rem;padding:.6rem .8rem;border-width:2px}
+input[type=checkbox],input[type=radio]{width:1.6rem;height:1.6rem;min-height:0;margin:.1rem .6rem 0 0;transform:none;flex:none;cursor:pointer}
+.opt{gap:.4rem;padding:14px 0;cursor:pointer}
+.opt .p{white-space:normal;text-align:right;min-width:4.5rem}
+.na{padding:12px 14px}.na label{cursor:pointer}
+button.b,button.g,nav.steps button{min-height:3rem;font-size:1.05rem;padding:.6rem 1.3rem;cursor:pointer}
+button.g,nav.steps button{border-width:2px}
+nav.steps{gap:8px}
+nav.steps button{font-size:1rem;padding:.5rem 1rem}
+nav.steps button.on{text-decoration:underline;text-underline-offset:.25em}
+nav.steps button.skip{opacity:1;text-decoration:none;border-style:dashed}
+:focus-visible{outline:4px solid var(--acc);outline-offset:3px}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:4px solid var(--acc);outline-offset:3px;box-shadow:0 0 0 7px var(--bg)}
+#step:focus,h2:focus{outline:none}
+.info>div.sel b::before{content:"\2713  Selected: "}
+.cmp .win::after{content:"\2713 Lower cost";display:block;font-weight:700;color:var(--ok);margin-top:4px}
+main{grid-template-columns:minmax(0,1fr) 22rem}
+@media(max-width:62rem){main{grid-template-columns:1fr}}
+@media(max-width:1100px){html[data-size="2"] main{grid-template-columns:1fr}}
+@media(max-width:1250px){html[data-size="3"] main{grid-template-columns:1fr}}
+@media(max-height:46rem){aside .card{position:static}}
+html[data-size="3"] aside .card{position:static}
+.sheet{font-size:1rem}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px}
+.tools .lbl{font-weight:700;margin-right:4px}
+.tools button[aria-pressed="true"]{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip-link{position:absolute;left:8px;top:-200px;z-index:10;background:var(--acc);color:var(--onacc);padding:.7rem 1rem;border-radius:8px}
+.skip-link:focus{top:8px}
+:root[data-contrast="high"]{--bg:#fff;--card:#fff;--ink:#000;--mut:#000;--line:#000;--fld:#000;--fldbg:#fff;--acc:#6a1800;--onacc:#fff;--acc2:#fff3ec;--ok:#0b3d1c;--bad:#8a0000}
+@media(prefers-color-scheme:dark){:root[data-contrast="high"]:not([data-theme="light"]){--bg:#000;--card:#000;--ink:#fff;--mut:#fff;--line:#fff;--fld:#fff;--fldbg:#000;--acc:#ffb59a;--onacc:#000;--acc2:#2a1208;--ok:#8dffb0;--bad:#ffaaa3}}
+:root[data-theme="dark"][data-contrast="high"]{--bg:#000;--card:#000;--ink:#fff;--mut:#fff;--line:#fff;--fld:#fff;--fldbg:#000;--acc:#ffb59a;--onacc:#000;--acc2:#2a1208;--ok:#8dffb0;--bad:#ffaaa3}
+[data-contrast="high"] .card{border-width:2px;box-shadow:none}
+[data-contrast="high"] .info>div.sel{box-shadow:inset 8px 0 0 var(--acc)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{html,html[data-size]{font-size:12pt!important}body{font:400 12pt/1.5 "Atkinson Hyperlegible",Arial,sans-serif;color:#000}.sheet{font-size:12pt}.sheet .note{color:#000;font-size:10.5pt}.terms{font-size:10.5pt}.skip-link,.tools,#live{display:none!important}}
+</style></head><body>
+<a class="skip-link" href="#step">Skip to the quote form</a><div id="live" class="sr" role="status" aria-live="polite"></div>
+<header><h1>Tony's Tech Support quote calculator</h1><p class="sub">Build a quote for your website, email, protection and IT support. Every section can be skipped. All prices include GST.</p><div class="tools" role="group" aria-label="Reading options"><span class="lbl">Text size:</span><button type="button" class="g" data-sz="1" onclick="setSize(1)" aria-pressed="true">Standard</button><button type="button" class="g" data-sz="2" onclick="setSize(2)" aria-pressed="false">Large</button><button type="button" class="g" data-sz="3" onclick="setSize(3)" aria-pressed="false">Extra large</button><button type="button" class="g" id="hc" onclick="togHC()" aria-pressed="false">High contrast: Off</button></div></header>
+<div class="ctawrap noprint" id="betaWrap"><div class="beta" id="betaNotice" role="note" aria-labelledby="betaT"><h2 id="betaT"><span class="badge">Beta</span>Please note: This calculator is currently in beta.</h2><p>I'm still testing and refining the calculator, so some features, calculations or prices may change. All prices shown are estimates and are provided as a guide only. Final pricing will need to be reviewed and confirmed by me before any quote is approved or work is authorised.</p><p>Your estimate is not a confirmed quote, and submitting it does not commit you to proceeding with the work. I'll review your requirements, confirm the scope of work and any applicable costs, and provide a final quote for your approval before work begins.</p><div class="betaact"><button type="button" class="b" id="betaOk" onclick="dismissBeta()">I understand</button></div></div></div>
+<script>try{if(sessionStorage.getItem('ttsBeta')==='1')document.getElementById('betaWrap').hidden=true}catch(e){}</script>
+<div class="ctawrap noprint"><div class="cta" id="cta"><h2>Ready to get started?</h2><p id="ctaInfo" class="note"></p><button id="sendbtn" type="button" class="b" onclick="sendQuote()">Send my quote to Tony</button><p class="note"><b>Please note:</b> sending your estimate is a request for review, not acceptance of a confirmed quote.</p><p id="sendmsg" class="note" role="status" aria-live="polite"></p><div id="payBox" class="rec" hidden></div><p class="note">Nothing is sent until you press send in your own email app. You can also email <a href="mailto:tony@tonystechsupport.com.au">tony@tonystechsupport.com.au</a> directly.</p></div></div>
+<nav class="steps" id="nav" aria-label="Quote steps"></nav>
+<main id="main"><section id="step" tabindex="-1" aria-label="Quote step"></section><aside aria-label="Your estimate"><div class="card" id="sum"></div></aside></main>
+<div id="exit" class="modal noprint" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exitT" aria-describedby="exitD"><h2 id="exitT">Before you go…</h2><p id="exitD">What you've filled in so far hasn't been sent to Tony, and your details aren't kept on his side if you leave. You can email what you've entered so far, and Tony will get in touch to talk through your needs in detail and put together a quote that suits you and your budget.</p><label for="exitContact">Best email or phone to reach you</label><input id="exitContact" type="text" autocomplete="email"><div class="btns"><button type="button" class="g" id="exitStay">Keep working on my quote</button><button type="button" class="b" id="exitSend">Email my details to Tony</button></div></div></div>
+<div id="reset" class="modal noprint" hidden><div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="resetT" aria-describedby="resetD"><h2 id="resetT">Start over?</h2><p id="resetD">This clears everything you've chosen and any details you've entered, and takes you back to step 1.</p><div class="btns"><button type="button" class="g" id="resetNo">Keep my quote</button><button type="button" class="b" id="resetYes">Yes, clear everything</button></div></div></div>
+<script>
+// ---- Beta disclaimer: one wording, reused in the estimate panel, the PDF/print sheet and both emails ----
+const DISC="This calculator is in beta, and all prices are indicative estimates, not guaranteed quotes. Final pricing and the scope of work must be confirmed by Tony's Tech Support and approved by you before work begins.";
+// ---- Admin config (edit values here; costs are Tony's undiscounted prices, retail = cost + 25% rounded up) ----
+const C={rate:99,after:148.5,urgent:198,floor:49.5,mark:1.25,flex:0.10,
+
+ time:{perK:800,base:6,minDays:6,rush:0.10,below:0.20,slow:0.02,stop:0.45}, // standard days = ceil(one-time total / perK) + base. Each day faster than standard adds 'rush' to build labour (down to minDays); each day under minDays adds 'below'. Each day slower takes off 'slow'; discounts stop at 'stop' (never reaches 50%) and the quote reads Flexible / no deadline – confirm
+ mgmt:{disc:0.10,bonus:30,min:{domain:5,mailFree:5,mailUser:2,base:30,baseSq:20,page:5,calendar:15,ticket:10,rsvp:30,paid:30,paidSq:15,donate:10,donateSq:5,member:20,memberSq:10}}, // estimated minutes per month; billed yearly in advance at standard rate less disc – confirm
+ prepay:{0:0.03,6:0.05,12:0.10}, // placeholder discounts on hour-bank: monthly (paid at the start of each month), 6 and 12 months prepaid – confirm
+ x24:{base:1600,users:10,perUser:20,months:12,cost:1400}, // 24/7 on-call retainer for a single client: covers contractor standby pay, tools/insurance and handover (cost is ex GST, per month); price includes up to 'users' people, then perUser each; minimum term in months – confirm
+ dep:{pct:0.10,min:100,gst:1.1}, // deposit = Tony's first-year cost of licences, hosting and protection x gst (so it still covers cost after GST is remitted), plus a non-refundable fee = domain registration costs x gst + pct of one-time labour (minimum min) – confirm
+ pay:{payid:'tony@tonystechsupport.com.au',bank:'UBank',bsb:'670864',acc:'26645107',card:'Zeller, no card surcharge',paypal:'paypal.me/TonysTS',cash:'By arrangement'}, // deposit payment details shown to the client
+ roll:{pct:0.10}, // rollover add-on: each rolled-over hour of capacity costs this % of the hourly rate per month (prepay discount applies) – confirm
+ sqPaid:250,sqDon:99,sqMem:198, /* time-based at $99/hr: donations 1 hr, memberships 2 hrs on Squarespace – confirm */ // set-up fee when payments/memberships use Squarespace's built-in tools (anchored to the per-page price) – confirm
+ terms:{base:990,page:250,calendar:200,ticket:100,rsvp:1200,paid:990,donate:297,member:594}, // donate = 3 hrs, member = 6 hrs at $99/hr (custom build: payment gateway, tiers/receipts, testing). calendar + ticket profile = old $300 bundle, split – confirm
+ xfer:{dom:0.5,mailSetup:1,mailbox:0.5,host:2,page:1.5}, // transfer/migration labour in HOURS at standard rate – confirm
+ sup:{perPerson:0.5,perExtraDevice:0.15}, // auto-suggested support hrs/month: ~0.4–0.7 requests per person/month (industry benchmark) x ~1 hr each, plus extra for devices beyond one per person
+ prot:{home:{start:55,step:2,min:29},biz:{base:95,minDev:3},mob:{single:14,pack:24,size:3}}};
+const up=c=>Math.ceil(c*C.mark-1e-9); // -1e-9 stops floating-point noise (e.g. 35.2*1.25) rounding an exact dollar up
+const DOM={au:{n:'.au domain (renewal, DNS)',cost:27}}; // cost from Tony's Squarespace example
+const MAIL={g1:{n:'Google Workspace Business Starter',cost:11.80},g2:{n:'Google Workspace Business Standard',cost:23.60},m1:{n:'Microsoft 365 Business Basic',cost:16.80},m2:{n:'Microsoft 365 Business Standard (desktop apps)',cost:25.20}, m3:{n:'Microsoft 365 Business Standard with Copilot (desktop apps)',cost:35.20},m4:{n:'Microsoft 365 Business Standard with Copilot, no Teams (desktop apps)',cost:30.40}}; // verify before quoting. m3/m4 = Microsoft AU yearly-plan price (no monthly price published), ex GST. m2 cost = Microsoft AU list price, monthly (highest) rate, ex GST, Oct 2026
+const HOST={sqb:{n:'Squarespace Basic (hosting)',cost:288},sqc:{n:'Squarespace Core (hosting)',cost:468},sqp:{n:'Squarespace Plus (hosting)',cost:828},sqa:{n:'Squarespace Advanced (hosting)',cost:1788},wp:{n:'WordPress hosting (cheapest plan)',cost:222,fix:277.5},ot:{n:'Other platform',cost:0}};
+const PROT={home:{n:'Emsisoft Anti-Malware Home (per PC)',cost:40.31},biz:{n:'Emsisoft Business Security (per device)',cost:66.51/3},mob:{n:'Emsisoft Mobile Security (Android)',cost:10.08}};
+const FEAT={calendar:['Event calendar',C.terms.calendar],ticket:['Ticketing platform profile (e.g. Humanitix, Eventbrite)',C.terms.ticket],rsvp:['Native RSVP ticketing with capacity tracking',C.terms.rsvp],paid:['Paid ticketing (card payments for events)',C.terms.paid],donate:['Donations',C.terms.donate],member:['Memberships',C.terms.member]};
+const TBC={booking:'Booking forms',blog:'Blog',store:'Online store'};
+const DESC={
+ mail:{g1:'Gmail with your own domain, 30 GB storage per person, Google Meet, Docs and Sheets. A good fit if you already use Google tools.',
+  g2:'Everything in Starter plus 2 TB storage per person, meeting recordings and larger video calls.',
+  m1:'Outlook email with your own domain, Teams, and web/mobile versions of Word and Excel (desktop apps are not included). A good fit if you are used to Microsoft Office.',
+  m2:'Everything in Business Basic plus the full desktop versions of Word, Excel, PowerPoint and Outlook, installed on up to 5 PCs or Macs per person. Best if you work with large documents or spreadsheets, or want to work offline.',
+  m3:'Everything in Business Standard (desktop apps and Teams) plus Microsoft Copilot working inside Word, Excel, PowerPoint, Outlook and Teams, using your own documents and emails to draft, summarise and answer questions.',
+  m4:'The same as Business Standard with Copilot, but without Microsoft Teams. A good fit if you already use another meeting tool such as Zoom.'},
+ host:{sq:'All-in-one website builder. Every page is edited visually with drag-and-drop, and hosting, security certificate and templates are included. Best when you or your team will edit pages yourselves. Costs more each year and the site stays tied to Squarespace.',
+  wp:'WordPress on VentraIP, an Australian host. Low cost and very flexible. Pages can be hand-built in HTML, which is fast and cheap to run and suits sites where Tony makes the changes. Easy editing by non-technical people needs extra set-up.',
+  ot:'Wix, GoDaddy, an existing host or something else. Tony will quote hosting and set-up separately.'}};
+const EDIT={tony:'Tony makes all the edits',mix:'Some pages edited by the client, the rest by Tony',client:'The client edits everything'};
+const STEPS=[['dom','Domain & email'],['site','Website scope'],['host','Hosting & management'],['xfer','Transfers & migration'],['time','Timeline'],['sup','IT support'],['prot','Protection'],['rev','Review & quote']];
+let S={i:0,skip:{},client:'',contact:'',dom:0,mail:'none',users:1,hosting:'none',edit:'tony',editors:1,mgmt:false,html:'no',xdom:0,xmail:0,xhost:false,xpages:0,xprov:'',pages:0,feat:{},tbc:{},base:false,time:'normal',sup:'adhoc',people:1,devs:1,hrs:0.5,hrsAuto:true,days:null,qts:0,extTimes:'',roll:false,rollHrs:1,bank:0,term:0,hours:'bh',resp:'std',ah:false,visits:0,km:'',home:0,biz:0,mob:0};
+try{const x=localStorage.getItem('tts2');if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+if(S.hosting=='sq')S.hosting='sqb';
+if(!S.qts){S.qts=Date.now();try{localStorage.setItem('tts2',JSON.stringify(S))}catch(e){}}
+const $=id=>document.getElementById(id),$$=n=>Math.round(n*100)/100,f=n=>'$'+(Math.round(n*100)/100).toLocaleString('en-AU',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){try{localStorage.setItem('tts2',JSON.stringify(S))}catch(e){}}
+// ---- Accessibility helpers ----
+let A={size:1,hc:false};
+try{const x=localStorage.getItem('tts2a');if(x)Object.assign(A,JSON.parse(x));else if(matchMedia('(prefers-contrast: more)').matches)A.hc=true}catch(e){}
+if(![1,2,3].includes(A.size))A.size=1;
+function applyA(){const r=document.documentElement;r.dataset.size=A.size;if(A.hc)r.dataset.contrast='high';else delete r.dataset.contrast;
+ document.querySelectorAll('[data-sz]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.sz===A.size)));
+ const h=$('hc');if(h){h.setAttribute('aria-pressed',String(A.hc));h.textContent='High contrast: '+(A.hc?'On':'Off')}
+ try{localStorage.setItem('tts2a',JSON.stringify(A))}catch(e){}}
+function setSize(n){A.size=n;applyA()}function togHC(){A.hc=!A.hc;applyA()}
+applyA();
+let uid=0;function linkLabels(){document.querySelectorAll('#step label').forEach(l=>{if(l.control)return;const e=l.nextElementSibling;if(e&&/^(INPUT|SELECT)$/.test(e.tagName)){if(!e.id)e.id='f'+(++uid);l.htmlFor=e.id}})}
+let liveT,liveOn=false;['input','change','click'].forEach(t=>addEventListener(t,()=>{liveOn=true},{once:true,capture:true}));
+function announce(r){clearTimeout(liveT);liveT=setTimeout(()=>{const e=$('live');if(e&&liveOn)e.textContent='Estimate updated. One-off total '+f(r.once)+'. Yearly total '+f(r.yr)+', about '+f(r.mo)+' per month. All prices include GST.'},900)}
+
+// ---- Protection volume pricing ----
+function pHome(n){if(!n)return null;const p=C.prot.home,per=Math.max(p.min,p.start-p.step*(n-1));return{total:per*n,d:n>1?f(per)+' per licence (volume price)':f(per)+' per licence'}}
+function pBiz(n){if(!n)return null;const p=C.prot.biz,t=n<=p.minDev?p.base:Math.floor(n*p.base/p.minDev);return{total:t,d:f(t/n)+' average per device'}}
+function pMob(n){if(!n)return null;const p=C.prot.mob;let k=Math.floor(n/p.size),r=n%p.size;if(r*p.single>=p.pack){k++;r=0}
+ return{total:k*p.pack+r*p.single,d:(k?k+' × '+p.size+'-pack ('+f(p.pack)+')':'')+(k&&r?' + ':'')+(r?r+' single ('+f(p.single)+')':'')}}
+// ---- Support-hours suggestion ----
+const sugHrs=()=>Math.max(0.5,Math.round((S.people*C.sup.perPerson+Math.max(0,S.devs-S.people)*C.sup.perExtraDevice)*2)/2);
+const hrsNote=()=>S.hrsAuto?'Suggested automatically from the people and devices above. Industry benchmarks show roughly 0.4–0.7 support requests per person per month at about an hour each, plus a little extra for more devices. Change it if you know better.':'Custom value. <a href="#" onclick="S.hrsAuto=true;syncHrs();save();upd();return false">Reset to suggested ('+sugHrs()+' hr)</a>';
+function syncHrs(){if(S.hrsAuto){S.hrs=sugHrs();const e=$('hrs');if(e)e.value=S.hrs}const n=$('hrsnote');if(n)n.innerHTML=hrsNote()}
+if(S.hrsAuto)S.hrs=sugHrs();
+// ---- Line calculation ----
+function hrsTxt(h){return h==1?'1 hour':h+' hours'}
+function mgmtCalc(){const M=C.mgmt.min,sq=String(S.hosting).startsWith('sq'),on=!S.skip.site,pr=[];let t=sq?M.baseSq:M.base;pr.push('website '+t);
+ const dom=S.skip.dom?0:S.dom,us=(S.skip.dom||S.mail=='none')?0:S.users,add=(v,l)=>{if(v>0){t+=v;pr.push(l+' '+v)}};
+ add(Math.max(0,dom-1)*M.domain,'extra domains');add(Math.max(0,us-M.mailFree)*M.mailUser,'extra mailboxes');
+ if(on){add(S.pages*M.page,'pages');if(S.feat.calendar)add(M.calendar,'calendar');if(S.feat.ticket)add(M.ticket,'ticketing');if(S.feat.rsvp)add(M.rsvp,'RSVP');if(S.feat.paid&&(S.feat.calendar||S.feat.rsvp))add(sq?M.paidSq:M.paid,'paid ticketing');if(S.feat.donate)add(sq?M.donateSq:M.donate,'donations');if(S.feat.member)add(sq?M.memberSq:M.member,'memberships')}
+ const H=Math.ceil(t/30)*30/60,pre=S.mpay!='mo',incl=pre?H+C.mgmt.bonus/60:H,rate=pre?C.rate*(1-C.mgmt.disc):C.rate,mo=Math.ceil(H*rate);
+ return{min:t,H,pre,incl,rate,mo,yr:mo*12,parts:pr.join(' + ')+' = '+t+' min a month, rounded up to '+H*60}}
+const x24Mo=()=>C.x24.base+Math.max(0,S.people-C.x24.users)*C.x24.perUser;
+const x24Total=()=>x24Mo()*C.x24.months;
+function x24Box(){return `<div class="rec"><b>24/7 on-call: ${f(x24Mo())} per month (${C.x24.months}-month minimum term)</b><p>Round-the-clock cover with a response target of about 1 hour for urgent issues. Includes up to ${C.x24.users} people, then ${f(C.x24.perUser)} per month for each extra person. Over the minimum term that is ${f(x24Total())}. If the service ends early, the remaining months are payable.</p><p>This covers the cost of keeping a roster of technicians on standby so I can have time off. Any urgent or emergency work done is billed on top at ${f(C.urgent)}/hour, minimum 1 hour.</p></div>`}
+const pcnt=x=>Math.round(x*100);
+const rollCap=()=>Math.min(Math.max(1,Math.round(+S.rollHrs)||1),+S.bank||1);
+const rollMo=()=>Math.ceil(rollCap()*C.rate*C.roll.pct*(1-(C.prepay[S.term]||0))-1e-9);
+function calc0(lab){
+ const L=[],k=x=>!S.skip[x];
+ const lb=(n,hrs,qty,d)=>L.push({n,d,once:Math.ceil(Math.ceil(hrs*C.rate)*qty*lab-1e-9),cost:hrs*C.rate*qty*lab*.5,labour:1});
+ if(k('dom')){if(S.dom>0)L.push({n:DOM.au.n+' ×'+S.dom,yr:up(DOM.au.cost)*S.dom,cost:DOM.au.cost*S.dom,dom:1});
+  if(S.mail!='none'){const m=MAIL[S.mail];L.push({n:m.n+' ×'+S.users+' user(s)',yr:up(m.cost)*12*S.users,cost:m.cost*12*S.users,d:f(up(m.cost))+' per user per month'})}}
+ if(k('host')){if(S.hosting!='none'){const h=HOST[S.hosting];if(h.cost)L.push({n:h.n,yr:h.fix||up(h.cost),cost:h.cost,web:1,keep:h.fix?1:0});else L.push({n:'Hosting on another platform',tbc:1})}
+  if(S.mgmt){const m=mgmtCalc();L.push({n:'Monthly website management: '+hrsTxt(m.incl)+' of my time each month',mo:m.mo,cost:m.H*C.floor*12/12,web:1,d:'Website maintenance and adjustments, updates, backups, security patching and uptime reports. '+(m.pre?'I expect your site to need about '+hrsTxt(m.H)+' a month, so by paying yearly in advance ('+f(m.yr)+' a year) you get an extra '+C.mgmt.bonus+' minutes. ':'Billed monthly at the standard rate. ')+'Time beyond this is billed at '+f(C.rate)+'/hour.'})}}
+ if(k('xfer')){const x=C.xfer;
+  if(S.xdom>0)lb('Domain transfer ×'+S.xdom,x.dom,S.xdom,'Unlock, transfer code and DNS records recreated. Registry renewal billed separately.');
+  if(S.xmail>0){lb('Email migration ×'+S.xmail+' mailbox(es)',x.mailbox,S.xmail,'Mailbox contents copied and devices reconnected.');lb('Email cut-over (DNS and mail routing)',x.mailSetup,1,'')}
+  if(S.xhost)lb('Move existing website to new hosting (as-is)',x.host,1,'Files and database copied, tested, then pointed at the new host.');
+  if(S.xpages>0)lb('Rebuild existing pages on the new site ×'+S.xpages,x.page,S.xpages,'Content already written; layout rebuilt.')}
+ if(k('site')){if(S.base)L.push({n:'Website foundation setup (single page, mobile-friendly, newsletter integration)',once:C.terms.base*lab,cost:C.terms.base*.5*lab,labour:1});
+  if(S.pages>0)L.push({n:'Additional website pages ×'+S.pages,once:C.terms.page*S.pages*lab,cost:C.terms.page*S.pages*.5*lab,labour:1});
+  const onSq=String(S.hosting).startsWith('sq');
+  const SQP={paid:[C.sqPaid,'Paid ticketing'],donate:[C.sqDon,'Donations'],member:[C.sqMem,'Memberships']};
+  for(const x in FEAT)if(S.feat[x]&&(x!='paid'||S.feat.calendar||S.feat.rsvp)){if(SQP[x]&&onSq){L.push({n:SQP[x][1]+' on Squarespace (built into your plan – set-up only)',d:'Saves '+f((C.terms[x]-SQP[x][0])*lab)+' compared with a custom payment build',once:SQP[x][0]*lab,cost:SQP[x][0]*.5*lab,labour:1});continue}L.push({n:FEAT[x][0],once:FEAT[x][1]*lab,cost:FEAT[x][1]*.5*lab,labour:1})}
+  for(const x in S.tbc)if(S.tbc[x])L.push({n:TBC[x]+' (quoted separately at $'+C.rate+'/hr)',tbc:1})}
+ if(k('sup')&&S.sup=='managed'){const h=S.bank,d=C.prepay[S.term]||0;
+  if(h>0){L.push({n:h+' hour(s)/month support bank, '+(S.term?S.term+'-month prepay':'billed monthly in advance'),mo:$$(h*C.rate*(1-d)),cost:h*C.floor,d:d?pcnt(d)+'% prepay discount':''});
+   if(S.roll)L.push({n:'Rollover: up to '+rollCap()+' unused hour(s) carry into the next month',mo:rollMo(),cost:rollCap()*C.floor*C.roll.pct,d:'Unused support hours up to this amount are added to the following month instead of expiring.'})}
+  if(S.hours=='x24')L.push({n:'24/7 on-call availability ('+C.x24.months+'-month minimum term)',mo:x24Mo(),cost:C.x24.cost*12,d:'Round-the-clock cover with a response target of about 1 hour for urgent issues. Minimum term '+C.x24.months+' months ('+f(x24Total())+' in total); remaining months are payable if the service ends early. Any urgent or emergency work done is billed on top at '+f(C.urgent)+'/hour, minimum 1 hour.'});
+  if((S.resp!='std'&&S.hours!='x24')||S.hours=='ext')L.push({n:'Priority response / extended hours',tbc:1})}
+ if(k('prot')){let p;
+  if(p=pHome(S.home))L.push({n:PROT.home.n.replace(' (per PC)','')+' ×'+S.home,yr:p.total,cost:PROT.home.cost*S.home,d:p.d});
+  if(p=pBiz(S.biz))L.push({n:PROT.biz.n.replace(' (per device)','')+' ×'+S.biz,yr:p.total,cost:Math.max(C.prot.biz.minDev,S.biz)*PROT.biz.cost,d:p.d});
+  if(p=pMob(S.mob))L.push({n:PROT.mob.n+' ×'+S.mob,yr:p.total,cost:PROT.mob.cost*S.mob,d:p.d})}
+ let once=0,yr=0,cost1=0,costY=0;
+ L.forEach(l=>{if(l.once)l.once=Math.ceil(l.once-1e-9);if(l.mo)l.mo=Math.ceil(l.mo-1e-9);if(l.yr&&!l.keep)l.yr=Math.ceil(l.yr-1e-9)});
+ L.forEach(l=>{if(l.mo)l.yr=l.mo*12;if(l.once)once+=l.once;if(l.yr){yr+=l.yr;costY+=l.cost||0}else cost1+=l.cost||0});
+ return{L,once,yr,mo:yr/12,cost1,costY,lab}}
+// ---- Turnaround & timeline pricing ----
+function timing(once1){const T=C.time;if(!(once1>0))return null;
+ const D0=Math.ceil(once1/T.perK-1e-9)+T.base,maxD=D0+Math.floor(T.stop/T.slow+1e-9);
+ let d=S.days==null?D0:Math.round(+S.days);if(!(d>=1))d=D0;d=Math.max(1,Math.min(maxD,d));
+ let lab=1;
+ if(d<D0)lab=1+T.rush*(D0-Math.max(d,T.minDays))+(d<T.minDays?T.below*(T.minDays-d):0);
+ else if(d>D0)lab=1-T.slow*(d-D0);
+ lab=Math.round(lab*1e4)/1e4;
+ return{D0,maxD,days:d,lab,below:d<T.minDays,flex:d>=maxD,std:d==D0,pct:Math.round((lab-1)*100)}}
+function depCalc(r){const D=C.dep;let u=0,d=0;
+ r.L.forEach(l=>{if(l.tbc||l.once||l.mo||!l.yr)return;if(l.dom)d+=l.cost||0;else u+=l.cost||0});
+ const all=r.once+r.yr;if(!(all>0))return null;
+ let a=Math.ceil(u*D.gst-1e-9),dm=Math.ceil(d*D.gst-1e-9),fee=Math.max(D.min,Math.ceil(r.once*D.pct-1e-9)),n=dm+fee;
+ const cap=Math.ceil(all);if(n>cap)n=cap;if(a+n>cap)a=cap-n;
+ return{a,n,dm,fee,tot:a+n}}
+function calc(){const r1=calc0(1),t=timing(r1.once);let r=r1;if(t&&t.lab!=1)r=calc0(t.lab);r.t=t||null;r.dep=depCalc(r);return r}
+function qnum(){const P=new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Perth',year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(S.qts)).reduce((o,x)=>(o[x.type]=x.value,o),{});
+ const k=(S.client.trim()+'|'+S.contact.trim()).toLowerCase();let h=0,g=7;for(const c of k){h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;g=(Math.imul(g,131)+c.charCodeAt(0))>>>0}
+ const e=x=>x.toString(36).toUpperCase().padStart(7,'0').slice(-4);
+ return P.year+P.month+P.day+P.hour+P.minute+(k=='|'?'00000000':e(h)+e(g))}
+function payHtml(d){const P=C.pay,q=qnum(),r=(a,b)=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`;
+ return `<h3>How to pay your deposit of ${f(d.tot)}</h3><table>${r('PayID',P.payid)}${r('Bank transfer',P.bank+'<br>BSB: '+P.bsb+'<br>Account: '+P.acc+'<br>Reference: '+q)}${r('Card',P.card)}${r('PayPal','<a href="https://'+P.paypal+'" target="_blank" rel="noopener">'+P.paypal+'</a>')}${r('Cash',P.cash)}</table><p class="note">Please use <b>${q}</b> as your payment reference (for PayID and PayPal, put it in the message or note). Please send Tony a screenshot of your payment once it has been made.</p>`}
+const DEPNOTE='Work and the estimated turnaround begin when the deposit is received, and the deposit is credited in full to your final invoice. The non-refundable fee is kept if the job is cancelled. The upfront costs part is refunded if those items have not yet been purchased.';
+function depSide(d){return `<div class="rec"><b>Deposit to start: ${f(d.tot)}</b><p>${d.a?f(d.a)+' upfront costs for licences and hosting I pay for at the start. ':''}${f(d.n)} non-refundable fee.</p></div>`}
+function depSheet(d){const row=(t,v)=>v?`<tr><td>${t}</td><td class="r">${f(v)}</td></tr>`:'';return `<h3>Deposit due before work starts</h3><table>${row('Upfront costs for licences and hosting paid at the start (inc GST)',d.a)}${row('Non-refundable fee (domain registration and booking/set-up costs)',d.n)}<tr class="tot"><td>Deposit required</td><td class="r">${f(d.tot)}</td></tr></table><p class="note">${DEPNOTE}</p>${payHtml(d)}`}
+const TIMEDISC='All times are estimates only. They can be affected by delays outside Tony\'s control, such as correct login details and access not being provided promptly, file copying and network speeds, third-party services, and the client\'s own availability to review and approve work.';
+function turnTxt(t){return t.flex?'Flexible / no deadline':t.days+' working day'+(t.days==1?'':'s')+' from receipt of deposit'+(t.below?' (timing to be confirmed)':'')}
+function setDays(n){S.days=isFinite(n)&&n>=1?Math.round(n):null;save();go(S.i)}
+function timeUI(t){const T=C.time;let m;
+ if(t.flex)m='<b>Flexible or no deadline.</b> This is the longest timeframe we discount for, taking '+Math.abs(t.pct)+'% off the one-time labour costs.';
+ else if(t.below)m='Faster delivery adds <b>'+t.pct+'%</b> to the one-time labour costs. Delivery in under '+T.minDays+' working days needs timing confirmed by Tony first, as other jobs may already be scheduled.';
+ else if(t.pct>0)m='Faster delivery adds <b>'+t.pct+'%</b> to the one-time labour costs.';
+ else if(t.pct<0)m='Allowing more time takes <b>'+Math.abs(t.pct)+'%</b> off the one-time labour costs.';
+ else m='Standard timeframe. No change to the price.';
+ return `<p class="note">Estimated from the size of your one-time work: <b>${t.D0} working days</b> for the initial delivery, counted from when your deposit is received.</p>
+ <label for="days">Working days to initial delivery (after deposit is received)</label>
+ <div class="stepper"><button type="button" class="g" aria-label="One working day fewer" onclick="setDays(${t.days-1})" ${t.days<=1?'disabled':''}>−</button><input id="days" type="number" min="1" max="${t.maxD}" value="${t.days}" onchange="setDays(+this.value)"><button type="button" class="g" aria-label="One working day more" onclick="setDays(${t.days+1})" ${t.flex?'disabled':''}>+</button>${t.std?'':`<button type="button" class="g" onclick="setDays(null)">Back to standard (${t.D0})</button>`}</div>
+ <div class="rec"><b>${t.flex?'Flexible / no deadline':t.days+' working days'}</b><p>${m}</p></div>
+ <p class="note">Applies to build and migration labour only, not licences or hosting.</p>
+ <p class="note"><b>Please note:</b> ${TIMEDISC}</p>`}
+// ---- Hosting recommendation ----
+function wantsPay(){return S.feat.paid||S.feat.donate||S.feat.member||S.tbc.store}
+function sqNote(){if(!wantsPay())return '';const d=Math.ceil(HOST.sqc.cost*C.mark)-Math.ceil(HOST.sqb.cost*C.mark);return `<div class="rec"><b>You chose payments or an online store</b><p>${String(S.hosting).startsWith('sq')?'Selling is built into Squarespace, so payments set-up is '+f(C.sqPaid)+' instead of '+f(C.terms.paid)+'.':'On Squarespace, payments set-up is '+f(C.sqPaid)+' instead of '+f(C.terms.paid)+' because selling is built in.'} Basic charges a 2% online store fee and 7% on memberships and digital content. Core costs ${f(d)} more a year and lowers those to 0% and 5%.</p></div>`}
+function recHost(){
+ const h=S.html,e=S.edit;let p,t;
+ if(e=='tony'){p='wp';t='Because only Tony edits the site, WordPress hosting with hand-built HTML pages is the best value. It is the cheapest option and no one else needs an editing login.'}
+ else if(h=='yes'){p='wp';t='Since you are comfortable with HTML, WordPress hosting works and is the cheaper choice. Squarespace is still easier if other people will also be editing pages.'}
+ else if(e=='client'){p=(S.editors>2||wantsPay())?'sqc':'sqb';t='Because you want to edit every page yourself and don\'t know HTML, Squarespace is worth the extra cost: every page is point-and-click, and you can add editors with limited permissions.'}
+ else{p=(S.editors>2||wantsPay())?'sqc':'sqb';t='Because you will edit some pages and don\'t know HTML, Squarespace is the safer pick: every page can be made editable, and Tony can still look after the pages you don\'t want to touch.'}
+ if(S.editors>1&&p=='wp')t+=' With '+S.editors+' people editing, consider Squarespace so everyone gets their own login.';
+ return{p,t}}
+// ---- UI ----
+const naBox=id=>`<div class="na"><label><input type="checkbox" ${S.skip[id]?'checked':''} onchange="S.skip['${id}']=this.checked;save();go(S.i)">Not needed (N/A) – skip this section</label></div>`;
+const sel=(k,o,extra='')=>`<select onchange="S.${k}=this.value${extra};save();upd()">${Object.entries(o).map(([v,t])=>`<option value="${v}" ${S[k]==v?'selected':''}>${t}</option>`).join('')}</select>`;
+const num=(k,min=0,re=0)=>`<input type="number" min="${min}" value="${S[k]}" oninput="S.${k}=Math.max(${min},+this.value||0);save();${re?'go(S.i)':'upd()'}">`;
+const chk=(obj,key,n,p,sm,re)=>`<label class="opt"><input type="checkbox" ${S[obj][key]?'checked':''} onchange="${re?`tf('${key}',this.checked)`:`S.${obj}['${key}']=this.checked;save();upd()`}"><span>${n}<small>${sm||''}</small></span><span class="p">${p}</span></label>`;
+function tf(k,v){S.feat[k]=v;if(!S.feat.calendar&&!S.feat.rsvp)S.feat.paid=false;save();go(S.i)}
+const info=(items,cur)=>`<div class="info">${items.map(([k,t,d])=>`<div class="${cur==k?'sel':''}"><b>${t}</b><span>${d}</span></div>`).join('')}</div>`;
+function body(id){
+ const disabled=S.skip[id];let h=id=='rev'?'':naBox(id);if(disabled&&id!='rev')return h+'<p class="note">This section is skipped and will not appear in your quote.</p>';
+ if(id=='dom')h+=`<h2>Domain & email</h2><label>.au domain names to manage</label>${num('dom')}<p class="note">Renewal and DNS setup, ${f(up(DOM.au.cost))} per year (ongoing) for each domain.</p>
+  <label>Email hosting</label>${sel('mail',{none:'No email hosting needed',g1:'Google Workspace Starter – '+f(up(MAIL.g1.cost))+' per user per month (ongoing)',g2:'Google Workspace Standard – '+f(up(MAIL.g2.cost))+' per user per month (ongoing)',m1:'Microsoft 365 Business Basic – '+f(up(MAIL.m1.cost))+' per user per month (ongoing)',m2:'Microsoft 365 Business Standard (includes desktop apps) – '+f(up(MAIL.m2.cost))+' per user per month (ongoing)',m3:'Microsoft 365 Business Standard with Copilot – '+f(up(MAIL.m3.cost))+' per user per month (ongoing)',m4:'Microsoft 365 Business Standard with Copilot, no Teams – '+f(up(MAIL.m4.cost))+' per user per month (ongoing)'},';go(S.i)')}
+  ${info([['g1','Google Workspace Starter',DESC.mail.g1],['g2','Google Workspace Standard',DESC.mail.g2],['m1','Microsoft 365 Business Basic',DESC.mail.m1],['m2','Microsoft 365 Business Standard (with desktop apps)',DESC.mail.m2],['m3','Standard with Copilot',DESC.mail.m3],['m4','Standard with Copilot, no Teams',DESC.mail.m4]],S.mail)}
+  <label>Number of email addresses</label>${num('users',1)}<p class="note">Prices shown per user, billed yearly in this quote. Eligible nonprofits may qualify for lower Microsoft or Google pricing; ask Tony.</p>`;
+ if(id=='host'){const r=recHost();h+=`<h2>Website hosting & management</h2>
+  <h3>Who will edit the website?</h3><p class="note">This helps work out the best platform: if Tony makes every change, a cheaper setup is fine; if you want to edit pages yourself, every page needs to be easy to edit.</p>
+  <label>Editing arrangement</label>${sel('edit',EDIT,';go(S.i)')}
+  <div class="row"><div><label>People who need editing access</label>${num('editors',1,1)}</div><div><label>Do you know HTML?</label>${sel('html',{no:'No',some:'A little',yes:'Yes'},';go(S.i)')}</div></div>
+  <div class="rec"><b>Recommended: ${HOST[r.p].n.split(' (')[0]}</b><p>${r.t}</p>${S.hosting!=r.p?`<button class="g" onclick="S.hosting='${r.p}';save();go(S.i)">Use the recommended platform</button>`:'<p class="note">✓ Selected below.</p>'}</div>
+  ${sqNote()}<label>Platform</label>${sel('hosting',{none:'No hosting needed',sqb:'Squarespace Basic – '+f(up(HOST.sqb.cost))+' per year (ongoing)',sqc:'Squarespace Core – '+f(up(HOST.sqc.cost))+' per year (ongoing)',sqp:'Squarespace Plus – '+f(up(HOST.sqp.cost))+' per year (ongoing)',sqa:'Squarespace Advanced – '+f(up(HOST.sqa.cost))+' per year (ongoing)',wp:'WordPress hosting – '+f(HOST.wp.fix)+' per year (ongoing)',ot:'Other / not sure'},';go(S.i)')}
+  ${info([['sqb','Squarespace Basic',DESC.host.sq+' Up to 2 contributors; 2% online store transaction fee.'],['sqc','Squarespace Core',DESC.host.sq+' Unlimited contributors, advanced analytics, CSS and JavaScript customisation, 0% store fee (5% on content and memberships).'],['sqp','Squarespace Plus',DESC.host.sq+' Everything in Core, plus lower card rates (from 1.6% + 30c), shipping and tax tools, sales funnel analytics and API integrations.'],['sqa','Squarespace Advanced',DESC.host.sq+' Everything in Plus, with the lowest card rates (from 1.4% + 30c) and 0% fees on memberships and content.'],['wp','WordPress (VentraIP)',DESC.host.wp],['ot','Other platform',DESC.host.ot]],S.hosting)}
+  <label class="opt"><input type="checkbox" ${S.mgmt?'checked':''} onchange="S.mgmt=this.checked;save();upd()"><span>Monthly website management<small>${hrsTxt(mgmtCalc().incl)} of my time each month for website maintenance and adjustments, updates, backups, security patching and uptime reports. ${mgmtCalc().pre?'I expect your site to need about '+hrsTxt(mgmtCalc().H)+' a month, so paying yearly in advance gets you an extra '+C.mgmt.bonus+' minutes per month of website support. That\'s '+(C.mgmt.bonus*12/60)+' hours a year! ':''}Time beyond this is billed at ${f(C.rate)}/hour.</small></span><span class="p">${f(mgmtCalc().mo)} per month (ongoing${mgmtCalc().pre?', billed yearly':''})</span></label>
+  ${S.mgmt?`<label>How would you like to pay for management?</label>${sel('mpay',{yr:'Yearly in advance (extra '+C.mgmt.bonus+' minutes a month included)',mo:'Monthly (standard rate, no extra time)'},';go(S.i)')}`:''}
+  <p class="note">Without management, the site can still get support at ${f(C.rate)}/hour.</p>`}
+ if(id=='xfer')h+=`<h2>Transfers & migration</h2><p class="note">Already have a domain, email, hosting or website somewhere else? Tony can move it across without you losing mail or website visitors. Prices are labour only; any new licences or hosting are charged in the other sections.</p>
+  <label>Current provider(s), e.g. GoDaddy, Wix, Telstra</label><input value="${esc(S.xprov)}" oninput="S.xprov=this.value;save();Q()">
+  <label>Domain names to transfer (${f(Math.ceil(C.xfer.dom*C.rate))} each, one-time)</label>${num('xdom')}<p class="note">You will need to provide the transfer code from your current registrar.</p>
+  <label>Mailboxes to move (${f(Math.ceil(C.xfer.mailbox*C.rate))} each, plus ${f(Math.ceil(C.xfer.mailSetup*C.rate))} cut-over, all one-time)</label>${num('xmail')}
+  <label class="opt"><input type="checkbox" ${S.xhost?'checked':''} onchange="S.xhost=this.checked;save();upd()"><span>Move my existing website to the new hosting as-is<small>Files and database copied across, tested, then switched over.</small></span><span class="p">${f(Math.ceil(C.xfer.host*C.rate))} one-time</span></label>
+  <label>Existing pages to rebuild on the new site (${f(Math.ceil(C.xfer.page*C.rate))} each, one-time)</label>${num('xpages')}<p class="note">For pages whose content is already written. Brand new pages are priced under Website scope.</p>`;
+ if(id=='site'){const ev=S.feat.calendar||S.feat.rsvp;h+=`<h2>Website scope & features</h2><label class="opt"><input type="checkbox" ${S.base?'checked':''} onchange="S.base=this.checked;save();upd()"><span>Foundation setup<small>Single-page, mobile-friendly site with newsletter integration</small></span><span class="p">${f(C.terms.base)} one-time</span></label>
+  <label>Additional pages (${f(C.terms.page)} each, one-time)</label>${num('pages')}<h3>Features</h3>
+  ${chk('feat','calendar',FEAT.calendar[0],f(FEAT.calendar[1])+' one-time','Upcoming events listed on your site',1)}
+  ${chk('feat','ticket',FEAT.ticket[0],f(FEAT.ticket[1])+' one-time','Set up and link your events on an external ticketing platform')}
+  ${chk('feat','rsvp',FEAT.rsvp[0],f(FEAT.rsvp[1])+' one-time','RSVPs taken on your own site, with limits per event',1)}
+  ${ev?`<div class="pop"><b>Selling tickets?</b><p class="note">Add payments to your events so people can pay online.</p>${chk('feat','paid',FEAT.paid[0],f(FEAT.paid[1])+' one-time','Card payments for event tickets')}<p class="note">Choose a Squarespace plan in the next step and set-up drops to ${f(C.sqPaid)}, because payments are built into every Squarespace plan.</p></div>`:''}
+  ${chk('feat','donate',FEAT.donate[0],f(FEAT.donate[1])+' one-time','Accept one-off or recurring donations online'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+f(C.sqDon)+')':''))}
+  ${chk('feat','member',FEAT.member[0],f(FEAT.member[1])+' one-time','Membership sign-ups with payments'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+f(C.sqMem)+')':''))}
+  ${Object.entries(TBC).map(([k,v])=>chk('tbc',k,v,'Quote on request')).join('')}`}
+ if(id=='time'){const t=calc().t;h+='<h2>Timeline & urgency</h2>'+(t?timeUI(t):'<p class="note">Add some one-time work (website features, pages or transfers) and an estimated turnaround time will appear here.</p>')}
+ if(id=='sup')h+=`<h2>IT support</h2><label>Support style</label>${sel('sup',{adhoc:'Ad hoc – pay for tech support as needed',managed:'Managed – monthly hour bank'},';go(S.i)')}
+  <div class="row"><div><label>People</label><input type="number" min="1" value="${S.people}" oninput="S.people=Math.max(1,+this.value||1);syncHrs();save();upd()"></div><div><label>Devices</label><input type="number" min="1" value="${S.devs}" oninput="S.devs=Math.max(1,+this.value||1);syncHrs();save();upd()"></div></div>
+  <label>Expected support hours per month</label><input id="hrs" type="number" min="0" step="0.5" value="${S.hrs}" oninput="S.hrs=Math.max(0,+this.value||0);S.hrsAuto=false;syncHrs();save();upd()"><p class="note" id="hrsnote">${hrsNote()}</p>
+  ${S.sup=='managed'?`<div class="rec"><b>What is an hour bank?</b><p>You set aside a fixed number of support hours each month for one flat monthly price, paid at the start of each month. Any support you use comes out of those hours. If you need more in a month, the extra time is billed at the standard rate of ${f(C.rate)}/hour.</p><p>Every term has a prepay discount: ${pcnt(C.prepay[0])}% off when paid monthly in advance, ${pcnt(C.prepay[6])}% off for 6 months prepaid and ${pcnt(C.prepay[12])}% off for 12 months prepaid. The monthly price stays the same whether or not you use every hour, so a bank suits you best if you expect to use most of it. Unused hours expire at the end of the month unless you add rollover below. The estimate panel compares the bank with paying ad hoc.</p></div><label>Hour bank per month</label>${sel('bank',{0:'None',1:'1 hour',3:'3 hours',5:'5 hours'},';S.bank=+S.bank;')}<label>Prepay term</label>${sel('term',{0:'Monthly in advance ('+pcnt(C.prepay[0])+'% off)',6:'6 months prepaid ('+pcnt(C.prepay[6])+'% off)',12:'12 months prepaid ('+pcnt(C.prepay[12])+'% off)'},';S.term=+S.term;')}
+  ${+S.bank>0?`<label class="opt"><input type="checkbox" ${S.roll?'checked':''} onchange="S.roll=this.checked;save();go(S.i)"><span>Roll over unused hours<small>Hours you don't use in a month are added to the next month instead of expiring, up to the amount you choose.</small></span><span class="p">${f(rollMo())} per month (ongoing)</span></label>${S.roll?`<label>Most hours that can roll over each month</label>${sel('rollHrs',Object.fromEntries(Array.from({length:+S.bank},(_,i)=>[i+1,(i+1)+(i?' hours':' hour')])),';S.rollHrs=+S.rollHrs;go(S.i)')}<p class="note">${f(Math.ceil(C.rate*C.roll.pct*(1-(C.prepay[S.term]||0))-1e-9))} per month for each hour of rollover allowed.</p>`:''}`:''}
+  <label>Availability</label>${sel('hours',{bh:'Business hours (Mon–Fri 9–5)',ext:'Extended hours – quote on request',x24:'24/7 on call – '+f(x24Mo())+' per month, '+C.x24.months+'-month minimum'},';go(S.i)')}
+  ${S.hours=='ext'?`<label for="ext">When would you like me to be available?</label><textarea id="ext" rows="3" placeholder="e.g. Weekdays 7am–7pm, plus Saturday mornings" oninput="S.extTimes=this.value;save();Q()">${esc(S.extTimes)}</textarea><p class="note">Tell me the days and times you need. Extended hours are quoted separately once I know what you need.</p>`:''}
+  ${S.hours=='x24'?x24Box():`<label>Response time</label>${sel('resp',{std:'Email next business day, SMS same-day where possible',pri:'Priority tier – limited places, quote on request',top:'Top priority with direct line – one place, quote on request'})}`}`:''}
+  <h3>Rates</h3><table><tr><td>Standard (per minute, no minimum)</td><td class="r">${f(C.rate)}/hr</td></tr><tr><td>After-hours (min 30 min)</td><td class="r">${f(C.after)}/hr</td></tr><tr><td>Urgent / emergency (min 1 hour)</td><td class="r">${f(C.urgent)}/hr</td></tr></table>
+  <h3>On-site callout estimate</h3>
+  <p class="note">Use the calculator below to estimate the callout fee for your address, or <a href="https://www.tonystechsupport.com.au/callout-fee" target="_blank" rel="noopener">open it in a new tab</a>.</p>
+  <iframe src="https://tshannon1.github.io/EstimatedCalloutFee/" title="Estimated callout fee calculator" width="100%" height="600" style="border:0;border-radius:8px;background:#fff" loading="lazy"></iframe>
+  <p class="note">Callout covers round-trip travel only; on-site time is billed separately. After-hours and urgent bookings also need a callout fee where travel is required.</p>`;
+ if(id=='prot'){const ph=C.prot.home,pb=C.prot.biz,pm=C.prot.mob;h+=`<h2>Managed protection</h2>
+  <div class="two"><div><b>Emsisoft Anti-Malware Home</b>For private or home use on individual Windows PCs. Each PC is protected on its own, with real-time malware, ransomware and phishing protection. There is no central dashboard, and the licence doesn't cover business use.</div>
+  <div><b>Emsisoft Business Security</b>For businesses, nonprofits and organisations. Covers the same threats, and all devices are managed together from one cloud console, so Tony can roll out settings, see alerts and report across every device.</div></div>
+  <p class="note">Prices drop automatically as you add licences. Android phones and tablets use Emsisoft Mobile Security.</p>
+  <label>Windows PCs – Emsisoft Anti-Malware Home (per year)</label>${num('home',0,0)}<p class="note" id="pp-home"></p>
+  <label>Windows business devices – Emsisoft Business Security (per year)</label>${num('biz')}<p class="note" id="pp-biz"></p>
+  <label>Android devices – Emsisoft Mobile Security (per year)</label>${num('mob')}<p class="note" id="pp-mob"></p>`}
+ if(id=='rev')h+=`<h2>Review & quote</h2><label>Prepared for</label><input value="${esc(S.client)}" oninput="S.client=this.value;save();Q()"><label>Contact email / phone</label><input value="${esc(S.contact)}" oninput="S.contact=this.value;save();Q()">
+  <div class="btns noprint"><button class="g" onclick="askReset()">Start over</button><button class="b" onclick="print()">Print / save as PDF</button></div><div id="quote-prev"></div>`;
+ return h}
+const FOC='input,select,textarea,button,a[href]';let lastI=-1,firstGo=true;
+function go(i){const st=$('step'),ae=document.activeElement;let idx=-1,pos=null;
+ if(i===lastI&&st.contains(ae)){idx=[...st.querySelectorAll(FOC)].indexOf(ae);try{pos=ae.selectionStart}catch(e){}}
+ go0(i);const changed=i!==lastI;lastI=i;
+ if(idx>=0){const el=st.querySelectorAll(FOC)[idx];if(el){el.focus({preventScroll:true});try{if(pos!=null)el.setSelectionRange(pos,pos)}catch(e){}}}
+ else if(changed&&!firstGo){const h=st.querySelector('h2');if(h){h.tabIndex=-1;h.focus()}}
+ firstGo=false;linkLabels()}
+function go0(i){S.i=i;save();$('step').innerHTML='<div class="card">'+body(STEPS[i][0])+(STEPS[i][0]=='rev'?'':`<div class="btns"><button class="g" ${i?'':'disabled'} onclick="go(${i-1})">Back</button><button class="b" onclick="go(${i+1})">Next</button></div>`)+'</div>';
+ $('nav').innerHTML=STEPS.map((s,j)=>`<button class="${j==i?'on':''} ${S.skip[s[0]]?'skip':''}" ${j==i?'aria-current="step"':''} onclick="go(${j})">${j+1}. ${s[1]}${S.skip[s[0]]?' (skipped)':''}</button>`).join('');upd();Q()}
+function rows(r,m){const cell=l=>l.tbc?'On request':l.once?f(l.once)+'<span class="tag"> one-time</span>':l.mo?f(l.mo)+'<span class="tag"> per month, ongoing</span>':f(l.yr)+'<span class="tag"> per year, ongoing</span>';
+ const line=l=>`<tr><td>${l.n}${l.d?`<div class="note">${l.d}</div>`:''}</td><td class="r">${cell(l)}</td>${m?`<td class="r m">${l.tbc?'':f((l.once||l.yr)-(l.cost||0))}</td>`:''}</tr>`;
+ const g=(t,a)=>a.length?`<tr><th colspan="${m?3:2}">${t}</th></tr>`+a.map(line).join(''):'';
+ return g('One-time setup fees (pay once)',r.L.filter(l=>!l.tbc&&l.once))+g('Ongoing fees (monthly or yearly)',r.L.filter(l=>!l.tbc&&!l.once&&(l.yr||l.mo)))+g('Quoted separately',r.L.filter(l=>l.tbc))}
+function totals(r){const all=r.once+r.yr;return `<tr class="tot"><td>One-time setup fees, total</td><td class="r">${f(r.once)}</td></tr><tr class="tot"><td>Ongoing fees, total per year (≈ ${f(r.mo)} per month)</td><td class="r">${f(r.yr)}</td></tr><tr><td class="note">Includes GST of</td><td class="r note">${f(all/11)}</td></tr>`}
+function ppNotes(){
+ const ph=C.prot.home,pb=C.prot.biz,pm=C.prot.mob,set=(id,t)=>{const e=$(id);if(e)e.innerHTML=t};
+ const h=pHome(S.home),b=pBiz(S.biz),m=pMob(S.mob);
+ set('pp-home',(h?`<b class="price">${f(h.total)} per year (ongoing)</b> for ${S.home} (${h.d}). `:'')+`1 licence ${f(ph.start)}; each extra licence takes ${f(ph.step)} off every licence, down to ${f(ph.min)} each.`);
+ set('pp-biz',(b?`<b class="price">${f(b.total)} per year (ongoing)</b> for ${S.biz} (${b.d}). `:'')+`1–${pb.minDev} devices ${f(pb.base)} in total; then about ${f(pb.base/pb.minDev)} for each additional device.`);
+ set('pp-mob',(m?`<b class="price">${f(m.total)} per year (ongoing)</b> for ${S.mob} (${m.d}). `:'')+`${f(pm.single)} each, or ${pm.size} devices for ${f(pm.pack)}. Two devices cost the same as a ${pm.size}-pack.`)}
+function upd(){const r=calc();let h='<h2>Your estimate</h2>';
+ h+=r.L.length?`<table>${rows(r,1)}${totals(r)}</table>`:'<p class="note">Choose options to build your estimate.</p>';
+ if(r.t)h+=`<p class="note"><b>Estimated turnaround:</b> ${turnTxt(r.t)}</p>`;
+ if(r.L.length)h+=`<p class="disc"><b>Estimate only:</b> ${DISC}</p>`;
+ if(r.dep)h+=depSide(r.dep);
+ if(!S.skip.sup&&S.sup=='managed'&&S.bank>0){const ad=S.hrs*C.rate,bank=S.bank*C.rate*(1-(C.prepay[S.term]||0)),over=Math.max(0,S.hrs-S.bank)*C.rate,tot=bank+over+(S.roll?rollMo():0);
+  h+=`<div class="cmp"><div class="${ad<=tot?'win':''}">Ad hoc<br><b>${f(ad)}/mo</b></div><div class="${tot<ad?'win':''}">Hour bank + extra hours<br><b>${f(tot)}/mo</b></div></div><p class="note">At ${S.hrs} hour(s) a month. A bank only saves money if you use most of it.</p>`}
+ if(document.body.classList.contains('marg')){const T=r.once+r.yr,c=r.cost1+r.costY;h+=`<div class="m"><h3>Margin view</h3><table><tr><td>Revenue</td><td class="r">${f(T)}</td></tr><tr><td>Cost (labour at ${f(C.floor)}/hr floor, licences undiscounted)</td><td class="r">${f(c)}</td></tr><tr><td>Margin</td><td class="r">${f(T-c)} (${T?Math.round((T-c)/T*100):0}%)</td></tr></table>${(()=>{const w=r.L.filter(l=>l.web).reduce((a,l)=>a+l.yr,0)/12;return w?`<p class="note">Market check: Australian care plans run from about $97/month with hosting (low end) to $200–$600/month for agencies. This quote's hosting + management is ${f(w)}/month.</p>`:''})()}${S.mgmt&&!S.skip.host?(()=>{const m=mgmtCalc(),e=m.mo/m.incl;return `<p class="note">Management: ${f(m.mo)}/month for ${hrsTxt(m.incl)} = ${f(e)}/hr if all included time is used, ${f(m.mo/m.H)}/hr at expected use (floor ${f(C.floor)}/hr).${e<C.floor?' <b>Below your minimum rate if the client uses all included time.</b>':''}</p>`})():''}<p class="note">Retail = cost × ${C.mark}, rounded up (volume protection prices are set manually). Labour cost = 50% of price (${f(C.floor)}/hr of ${f(C.rate)}).</p></div>`}
+ $('sum').innerHTML=h;ppNotes();Q();announce(r);updateCta(r)}
+function Q(){const r=calc(),d=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+ const notes=[];
+ if(!S.skip.host&&S.hosting!='none')notes.push('Website editing: '+EDIT[S.edit].toLowerCase()+(S.editors>1?' ('+S.editors+' editors)':'')+'.');
+ if(!S.skip.xfer&&S.xprov.trim())notes.push('Transferring from: '+esc(S.xprov.trim())+'.');
+ if(r.t){const t=r.t;notes.push('<b>Estimated turnaround for initial delivery:</b> '+turnTxt(t)+'.');if(!t.flex&&t.pct>0)notes.push('One-time labour includes a '+t.pct+'% loading for the faster timeframe.');if(t.pct<0)notes.push('One-time labour includes a '+Math.abs(t.pct)+'% discount for the longer timeframe.');if(t.below)notes.push('Delivery in under '+C.time.minDays+' working days must be confirmed by Tony before work is scheduled.');notes.push(TIMEDISC)}
+ if(!S.skip.sup&&S.sup=='managed'&&S.hours=='x24')notes.push('<b>24/7 on-call:</b> '+f(x24Mo())+' per month on a '+C.x24.months+'-month minimum term ('+f(x24Total())+' over the minimum term). If the service ends early, the remaining months are payable.');
+ if(!S.skip.sup&&S.sup=='managed'&&S.hours=='ext'&&S.extTimes.trim())notes.push('<b>Requested extended-hours availability:</b> '+esc(S.extTimes.trim()).replace(/\n/g,'<br>')+' (quoted separately).');
+ const html=`<div class="sheet"><h2>Quote – Tony's Tech Support</h2><p>Anthony Gerald Shannon t/as Tony's Tech Support · ABN 89 792 481 545<br>0480 079 649 · tony@tonystechsupport.com.au · Hazelmere WA 6055</p>
+ <p><b>Prepared for:</b> ${esc(S.client)||'__________________'} ${S.contact?'· '+esc(S.contact):''}<br><b>Date:</b> ${d} · <b>Valid for:</b> 30 days<br><b>Quote number:</b> ${qnum()}</p>
+ <table><tr><th>Item</th><th class="r">Price (inc GST)</th></tr>${rows(r,0)}${totals(r)}</table>
+ <p class="disc"><b>Estimate only:</b> ${DISC}</p>
+ ${r.dep?depSheet(r.dep):''}
+ ${notes.map(n=>`<p class="note">${n}</p>`).join('')}
+ <p class="note">All prices include GST. Labour is billed at ${f(C.rate)}/hour per minute; after-hours ${f(C.after)}/hour; urgent ${f(C.urgent)}/hour. Items marked "On request" are quoted separately.</p>
+ <div class="sig"><div>Client name, signature & date</div><div>Tony Shannon, signature & date</div></div>
+ <div class="terms"><h3>Terms and conditions (summary)</h3><ol>
+ <li><b>Payment</b> is due on completion of service or by the invoice due date. Cash, EFTPOS, cards, PayPal and PayID are accepted with no card surcharge.</li>
+ <li><b>Deposit:</b> a deposit is payable before work starts and is credited to your final invoice. The non-refundable fee is kept if the job is cancelled; any upfront costs not yet purchased are refunded.</li>
+ <li><b>Estimates</b> are an indication only; some issues cannot be fully diagnosed until work begins. Significant changes will be communicated where practicable.</li>
+ <li><b>Timeframes</b> are estimates only and can be affected by delays outside Tony's control, such as correct login details and access not being provided promptly, file copying and network speeds, third-party services, and client review and approval times.</li>
+ <li><b>Hours:</b> Mon–Fri 9am–5pm excluding public holidays. After-hours and weekend work is charged at ${f(C.after)}/hour (minimum 30 minutes); urgent work at ${f(C.urgent)}/hour (minimum 1 hour).</li>
+ <li><b>Cancellation:</b> free more than 24 hours before; within 24 hours half the callout fee; within 12 hours the full callout fee; remote sessions cancelled within 6 hours may incur $25.</li>
+ <li><b>Backups:</b> you are responsible for backing up data before repairs, upgrades or other technical work. Data recovery is not guaranteed.</li>
+ <li><b>Warranty:</b> 14 days on the original service, claimed in writing to tony@tonystechsupport.com.au.</li>
+ <li><b>Third-party services</b> (Microsoft, Google, Squarespace, domain registrars and others) are governed by their own terms and prices, which may change.</li>
+ <li><b>Liability</b> is limited to the extent permitted by law. Nothing here limits your rights under the Australian Consumer Law.</li>
+ <li><b>No 24/7 cover</b> is included unless stated in this quote. Default response: email next business day, SMS same-day where possible, phone as soon as possible.</li></ol>
+ <p>Full terms: tonystechsupport.com.au/terms. By signing, the client accepts this quote and those terms.</p></div></div>`;
+ $('quote').innerHTML=html;const p=$('quote-prev');if(p)p.innerHTML=html}
+// ---- Call to action: build the PDF and open an email to Tony ----
+const TONY='tony@tonystechsupport.com.au';
+function updateCta(r){const e=$('ctaInfo');if(!e)return;const pb=$('payBox');if(pb&&!pb.hidden){if(r.dep)pb.innerHTML=payHtml(r.dep);else pb.hidden=true}const d=r.dep;e.innerHTML=(r.once+r.yr>0?'Your quote so far: <b>'+f(r.once)+'</b> one-time plus <b>'+f(r.yr)+'</b> per year'+(d?', deposit <b>'+f(d.tot)+'</b>':'')+(r.t?', estimated turnaround <b>'+(r.t.flex?'flexible, no deadline':r.t.days+' working days')+'</b>':'')+'. ':'Build your quote in the steps below, then press the button when you are ready. ')+'Pressing the button saves your quote as a PDF and opens an email to Tony. Attach the PDF and press send, and Tony will reply to confirm the details and arrange your deposit. Work starts when the deposit is received.'}
+const pdfName=()=>'Quote '+qnum()+' - '+((S.client||'').replace(/[^\w .-]+/g,'').trim()||'Tonys Tech Support')+'.pdf';
+let pdfLib=null;
+function loadPdfLib(){if(window.html2pdf)return Promise.resolve();return pdfLib||(pdfLib=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';sc.onload=res;sc.onerror=()=>{pdfLib=null;rej(new Error('load'))};document.head.appendChild(sc)}))}
+async function makePdf(){await loadPdfLib();const host=document.createElement('div');host.style.cssText='position:absolute;left:-10000px;top:0;width:794px;background:#fff';host.innerHTML=$('quote').innerHTML;document.body.appendChild(host);
+ try{return await html2pdf().set({margin:[10,10,12,10],image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['tr','.sig','.disc']}}).from(host.firstElementChild).outputPdf('blob')}finally{host.remove()}}
+function mailBody(r){const price=l=>l.tbc?'on request':l.once?f(l.once)+' one-time':l.mo?f(l.mo)+'/month':f(l.yr)+'/year',items=r.L.slice(0,25).map(l=>'- '+l.n+': '+price(l)).join('\n');
+ return 'Hi Tony,\n\nI would like to go ahead with the quote I built on your website. The PDF quote is attached.\n\nQuote number: '+qnum()+'\nName: '+S.client.trim()+'\nContact: '+S.contact.trim()+'\n\nOne-time setup: '+f(r.once)+'\nOngoing: '+f(r.yr)+' per year (about '+f(r.mo)+' per month)'+(r.dep?'\nDeposit: '+f(r.dep.tot):'')+(r.t?'\nEstimated turnaround: '+turnTxt(r.t):'')+'\n\nItems:\n'+items+'\n\nEstimate only: '+DISC+'\n\nThanks,\n'+S.client.trim()}
+async function sendQuote(){const m=$('sendmsg'),b=$('sendbtn'),say=(t,bad)=>{m.className='note'+(bad?' warn':'');m.textContent=t};
+ if(!S.client.trim()||S.contact.trim().length<5){say('Almost there: please fill in "Prepared for" and your contact email or phone in the Review & quote step below, then press the button again so Tony knows who to reply to.',1);go(STEPS.length-1);const i=$('step').querySelector('input');if(i)i.focus();return}
+ const r=calc();if(!(r.once+r.yr>0)){say('Your quote is empty. Choose some options in the earlier steps first.',1);return}
+ b.disabled=true;say('Creating your PDF…');let blob=null;
+ try{blob=await makePdf()}catch(e){}
+ if(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
+ leaveOK=true;
+ location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote request '+qnum()+' from '+S.client.trim())+'&body='+encodeURIComponent(mailBody(r));
+ b.disabled=false;
+ const pb=$('payBox');if(pb&&r.dep){pb.innerHTML=payHtml(r.dep);pb.hidden=false}
+ say(blob?'Your PDF has been saved to your device and an email to Tony should be opening. Please attach the PDF and press send. Payment options for your deposit are shown below. If no email opens, write to '+TONY+' and attach the PDF.':'We could not create the PDF automatically. Please use "Print / save as PDF" above, then email it to '+TONY+'. An email with your quote summary should be opening now.')}
+// ---- Leaving the page part-way: offer to email what has been filled in ----
+let leaveOK=false,exitShown=false,exitPrev=null;
+function dirty(){if(leaveOK)return false;const r=calc();return !!(S.client.trim()||S.contact.trim()||r.once+r.yr>0)}
+function partialBody(){const r=calc(),price=l=>l.tbc?'on request':l.once?f(l.once)+' one-time':l.mo?f(l.mo)+'/month':f(l.yr)+'/year',items=r.L.slice(0,25).map(l=>'- '+l.n+': '+price(l)).join('\n'),nm=S.client.trim();
+ return 'Hi Tony,\n\nI was looking at your quote calculator and would like to talk through my needs and get a quote tailored to me and my budget.\n\nName: '+(nm||'(please add)')+'\nContact: '+(S.contact.trim()||'(please add)')+(r.once+r.yr>0?'\n\nWhat I had chosen so far (not final):\nOne-time: '+f(r.once)+'\nOngoing: '+f(r.yr)+' per year\n\nItems:\n'+items+'\n\nEstimate only: '+DISC:'')+'\n\nThanks,\n'+nm}
+function showExit(){if(exitShown||!dirty()||!$('reset').hidden)return;exitShown=true;exitPrev=document.activeElement;$('exitContact').value=S.contact||'';$('exit').hidden=false;$('exitSend').focus()}
+function closeExit(){$('exit').hidden=true;if(exitPrev&&exitPrev.focus)exitPrev.focus()}
+$('exitStay').onclick=closeExit;
+$('exitSend').onclick=()=>{const c=$('exitContact').value.trim();if(c){S.contact=c;save();Q()}leaveOK=true;location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':''))+'&body='+encodeURIComponent(partialBody());closeExit()};
+document.addEventListener('mouseout',e=>{if(!e.relatedTarget&&e.clientY<=0)showExit()});
+addEventListener('keydown',e=>{const m=$('exit');if(m.hidden)return;if(e.key=='Escape'){closeExit();return}
+ if(e.key=='Tab'){const x=[$('exitContact'),$('exitStay'),$('exitSend')],i=x.indexOf(document.activeElement);e.preventDefault();x[(i+(e.shiftKey?-1:1)+x.length)%x.length].focus()}});
+addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue=''}});
+// ---- Beta notice: dismiss for the rest of this visit (comes back next visit; the short disclaimers always stay) ----
+function dismissBeta(){const w=$('betaWrap');if(w)w.hidden=true;try{sessionStorage.setItem('ttsBeta','1')}catch(e){}const c=$('cta'),h=c&&c.querySelector('h2');if(h){h.tabIndex=-1;h.focus()}}
+// ---- Start over: in-page confirmation (native confirm() and the browser's leave-page prompt can be blocked or cancelled) ----
+let resetPrev=null;
+function askReset(){resetPrev=document.activeElement;$('reset').hidden=false;$('resetNo').focus()}
+function closeReset(){$('reset').hidden=true;if(resetPrev&&resetPrev.focus)resetPrev.focus()}
+function doReset(){leaveOK=true;try{localStorage.removeItem('tts2')}catch(e){}location.reload()}
+$('resetNo').onclick=closeReset;$('resetYes').onclick=doReset;
+addEventListener('keydown',e=>{if($('reset').hidden)return;if(e.key=='Escape'){closeReset();return}
+ if(e.key=='Tab'){const x=[$('resetNo'),$('resetYes')],i=x.indexOf(document.activeElement);e.preventDefault();x[(i+(e.shiftKey?-1:1)+x.length)%x.length].focus()}});
+// secret margin view: add #margins to the URL or press Ctrl+Alt+M
+function mg(on){document.body.classList.toggle('marg',on);upd()}
+if(location.hash=='#margins')document.body.classList.add('marg');
+addEventListener('keydown',e=>{if(e.ctrlKey&&e.altKey&&e.key.toLowerCase()=='m')mg(!document.body.classList.contains('marg'))});
+document.body.insertAdjacentHTML('beforeend','<div id="quote"></div>');go(Math.min(S.i,STEPS.length-1));
+</script></body></html>
