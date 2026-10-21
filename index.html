@@ -42,7 +42,7 @@ table{width:100%;border-collapse:collapse;font-size:.94rem}td,th{padding:7px 4px
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.cmp div{border:1.5px solid var(--line);border-radius:8px;padding:10px}.cmp .win{border-color:var(--ok);background:var(--acc2)}
 .info{border:1px solid var(--line);border-radius:8px;margin:10px 0;overflow:hidden}
 .info>div{padding:9px 12px;border-bottom:1px solid var(--line);font-size:.93rem}.info>div:last-child{border-bottom:0}
-.info>div.sel{background:var(--acc2);box-shadow:inset 4px 0 0 var(--acc)}.info b{display:block}.info span{color:var(--mut)}
+.info.pick>div{cursor:pointer}.info.pick>div:hover{background:var(--acc2)}.info>div.sel{background:var(--acc2);box-shadow:inset 4px 0 0 var(--acc)}.info b{display:block}.info span{color:var(--mut)}
 .rec{border-left:5px solid var(--acc);background:var(--acc2);border-radius:8px;padding:12px 14px;margin:14px 0}.rec p{margin:4px 0}
 .pop{border:2px solid var(--acc);background:var(--acc2);border-radius:10px;padding:12px 14px;margin:12px 0;animation:pop .25s ease-out}
 @keyframes pop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
@@ -53,7 +53,8 @@ table{width:100%;border-collapse:collapse;font-size:.94rem}td,th{padding:7px 4px
 .m{display:none;color:var(--acc)}body.marg .m{display:table-cell}body.marg div.m{display:block}
 .stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.stepper input{width:7rem;text-align:center}.stepper button.g{min-width:3rem}
 .ctawrap{max-width:1100px;margin:12px auto 0;padding:0 20px}.cta{margin-top:0;padding:18px 20px;border:2px solid var(--acc);border-radius:12px;background:var(--acc2)}.cta h3{margin-top:0}.cta ol{padding-left:1.4rem;margin:8px 0 14px}.cta li{margin-bottom:4px}
-.beta{border:2px solid var(--acc);border-left-width:8px;border-radius:12px;background:var(--acc2);padding:16px 20px}.beta h2{font-size:1.25rem;margin:0 0 8px}.beta p{margin:0 0 8px}.beta .betaact{margin-top:12px}.beta .badge{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:999px;padding:0 .7em;margin-right:.5em;font-size:.85em}
+.beta{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;background:var(--acc2);padding:6px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;line-height:1.45}.beta p{margin:0;flex:1 1 18rem;color:var(--mut)}.beta .badge{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:999px;padding:0 .6em;margin-right:.4em;font-size:.8em;font-weight:700}.beta button.g{min-height:2.2rem;font-size:.85rem;padding:.2rem .8rem}
+.rng{white-space:nowrap}
 .disc{border:1px solid var(--line);border-left:5px solid var(--acc);background:var(--acc2);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:.95rem;line-height:1.5}.sheet .disc{background:#f6f6f6;border-color:#999;border-left-color:#8f2a0b;color:#111}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}.modal[hidden]{display:none}.modal-box{background:var(--card);color:var(--ink);border:2px solid var(--acc);border-radius:12px;padding:22px;max-width:34rem;width:100%;max-height:90vh;overflow:auto}
 @media print{.modal{display:none!important}}
@@ -116,18 +117,26 @@ html[data-size="3"] aside .card{position:static}
 </style></head><body>
 <a class="skip-link" href="#step">Skip to the quote form</a><div id="live" class="sr" role="status" aria-live="polite"></div>
 <header><h1>Tony's Tech Support quote calculator</h1><p class="sub">Build a quote for your website, email, protection and IT support. Every section can be skipped. All prices include GST.</p><div class="tools" role="group" aria-label="Reading options"><span class="lbl">Text size:</span><button type="button" class="g" data-sz="1" onclick="setSize(1)" aria-pressed="true">Standard</button><button type="button" class="g" data-sz="2" onclick="setSize(2)" aria-pressed="false">Large</button><button type="button" class="g" data-sz="3" onclick="setSize(3)" aria-pressed="false">Extra large</button><button type="button" class="g" id="hc" onclick="togHC()" aria-pressed="false">High contrast: Off</button></div></header>
-<div class="ctawrap noprint" id="betaWrap"><div class="beta" id="betaNotice" role="note" aria-labelledby="betaT"><h2 id="betaT"><span class="badge">Beta</span>Please note: This calculator is currently in beta.</h2><p>I'm still testing and refining the calculator, so some features, calculations or prices may change. All prices shown are estimates and are provided as a guide only. Final pricing will need to be reviewed and confirmed by me before any quote is approved or work is authorised.</p><p>Your estimate is not a confirmed quote, and submitting it does not commit you to proceeding with the work. I'll review your requirements, confirm the scope of work and any applicable costs, and provide a final quote for your approval before work begins.</p><div class="betaact"><button type="button" class="b" id="betaOk" onclick="dismissBeta()">I understand</button></div></div></div>
+<div class="ctawrap noprint" id="betaWrap"><div class="beta" id="betaNotice" role="note" aria-label="Beta notice"><p><span class="badge">Beta</span>This calculator is still being tested. Prices are estimated ranges only. I'll confirm the scope and final price with you before any work starts, and sending an estimate doesn't commit you to anything.</p><button type="button" class="g" id="betaOk" onclick="dismissBeta()" aria-label="Dismiss the beta notice">Got it</button></div></div>
 <script>try{if(sessionStorage.getItem('ttsBeta')==='1')document.getElementById('betaWrap').hidden=true}catch(e){}</script>
-<div class="ctawrap noprint"><div class="cta" id="cta"><h2>Ready to get started?</h2><p id="ctaInfo" class="note"></p><button id="sendbtn" type="button" class="b" onclick="sendQuote()">Send my quote to Tony</button><p class="note"><b>Please note:</b> sending your estimate is a request for review, not acceptance of a confirmed quote.</p><p id="sendmsg" class="note" role="status" aria-live="polite"></p><div id="payBox" class="rec" hidden></div><p class="note">Nothing is sent until you press send in your own email app. You can also email <a href="mailto:tony@tonystechsupport.com.au">tony@tonystechsupport.com.au</a> directly.</p></div></div>
+<div class="ctawrap noprint"><div class="cta" id="cta"><h2>Ready to get started?</h2><p id="ctaInfo" class="note"></p><button id="sendbtn" type="button" class="b" onclick="sendQuote()">Send my quote to Tony</button><p class="note"><b>Please note:</b> sending your estimate is a request for review, not acceptance of a confirmed quote.</p><p id="sendmsg" class="note" role="status" aria-live="polite"></p><div id="payBox" class="rec" hidden></div><p id="pdfAfter" hidden><button type="button" class="g" onclick="downloadPdf()">Download a PDF copy for my records</button></p><p class="note">You can also email <a href="mailto:tony@tonystechsupport.com.au">tony@tonystechsupport.com.au</a> directly.</p></div></div>
 <nav class="steps" id="nav" aria-label="Quote steps"></nav>
 <main id="main"><section id="step" tabindex="-1" aria-label="Quote step"></section><aside aria-label="Your estimate"><div class="card" id="sum"></div></aside></main>
 <div id="exit" class="modal noprint" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exitT" aria-describedby="exitD"><h2 id="exitT">Before you go…</h2><p id="exitD">What you've filled in so far hasn't been sent to Tony, and your details aren't kept on his side if you leave. You can email what you've entered so far, and Tony will get in touch to talk through your needs in detail and put together a quote that suits you and your budget.</p><label for="exitContact">Best email or phone to reach you</label><input id="exitContact" type="text" autocomplete="email"><div class="btns"><button type="button" class="g" id="exitStay">Keep working on my quote</button><button type="button" class="b" id="exitSend">Email my details to Tony</button></div></div></div>
 <div id="reset" class="modal noprint" hidden><div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="resetT" aria-describedby="resetD"><h2 id="resetT">Start over?</h2><p id="resetD">This clears everything you've chosen and any details you've entered, and takes you back to step 1.</p><div class="btns"><button type="button" class="g" id="resetNo">Keep my quote</button><button type="button" class="b" id="resetYes">Yes, clear everything</button></div></div></div>
 <script>
 // ---- Beta disclaimer: one wording, reused in the estimate panel, the PDF/print sheet and both emails ----
-const DISC="This calculator is in beta, and all prices are indicative estimates, not guaranteed quotes. Final pricing and the scope of work must be confirmed by Tony's Tech Support and approved by you before work begins.";
-// ---- Admin config (edit values here; costs are Tony's undiscounted prices, retail = cost + 25% rounded up) ----
-const C={rate:99,after:148.5,urgent:198,floor:49.5,mark:1.25,flex:0.10,
+const DISC="This calculator is in beta. All prices are estimated ranges, not guaranteed quotes; where your job falls in each range depends on its complexity. Final pricing and the scope of work must be confirmed by Tony's Tech Support and approved by you before work begins.";
+// ---- Backend email (sends the quote straight to Tony, no email app needed) ----
+// Free service: go to https://web3forms.com, enter tony@tonystechsupport.com.au, and paste the Access Key it emails you below.
+// Leave key blank to fall back to the old "open my email app" method. attach:true sends the PDF too (needs a Web3Forms Pro plan).
+const FORM={key:'e400a931-83ec-41fb-a3da-9df2c17efefa',endpoint:'https://api.web3forms.com/submit',attach:false};
+// ---- Admin config (edit values here; costs are Tony's undiscounted prices) ----
+// PRICE RANGES: one-time work uses [low, high] pairs below. Third-party items (domains, email, hosting, protection) are priced
+// from cost x passLo (low end) to cost x passHi (high end), rounded up to whole dollars. passLo 1.15 = the 15% upfront processing fee.
+const C={rate:99,after:148.5,urgent:198,floor:49.5,mark:1.25,passLo:1.15,passHi:1.25,flex:0.10,
+ web:{starter:[100,150],basic:[400,600],std:[800,990]}, // website packages: starter = one page, text + images, cannot be expanded; basic = home, about, contact; std = basic + SEO and Google Analytics – confirm
+ mailSet:{first:[99,149],extra:[50,75]}, // email set-up: first user includes domain DNS + spam-protection records, aliases, signature and walkthrough; each additional user – confirm
 
  time:{perK:800,base:6,minDays:6,rush:0.10,below:0.20,slow:0.02,stop:0.45}, // standard days = ceil(one-time total / perK) + base. Each day faster than standard adds 'rush' to build labour (down to minDays); each day under minDays adds 'below'. Each day slower takes off 'slow'; discounts stop at 'stop' (never reaches 50%) and the quote reads Flexible / no deadline – confirm
  mgmt:{disc:0.10,bonus:30,min:{domain:5,mailFree:5,mailUser:2,base:30,baseSq:20,page:5,calendar:15,ticket:10,rsvp:30,paid:30,paidSq:15,donate:10,donateSq:5,member:20,memberSq:10}}, // estimated minutes per month; billed yearly in advance at standard rate less disc – confirm
@@ -136,16 +145,29 @@ const C={rate:99,after:148.5,urgent:198,floor:49.5,mark:1.25,flex:0.10,
  dep:{pct:0.10,min:100,gst:1.1}, // deposit = Tony's first-year cost of licences, hosting and protection x gst (so it still covers cost after GST is remitted), plus a non-refundable fee = domain registration costs x gst + pct of one-time labour (minimum min) – confirm
  pay:{payid:'tony@tonystechsupport.com.au',bank:'UBank',bsb:'670864',acc:'26645107',card:'Zeller, no card surcharge',paypal:'paypal.me/TonysTS',cash:'By arrangement'}, // deposit payment details shown to the client
  roll:{pct:0.10}, // rollover add-on: each rolled-over hour of capacity costs this % of the hourly rate per month (prepay discount applies) – confirm
- sqPaid:250,sqDon:99,sqMem:198, /* time-based at $99/hr: donations 1 hr, memberships 2 hrs on Squarespace – confirm */ // set-up fee when payments/memberships use Squarespace's built-in tools (anchored to the per-page price) – confirm
- terms:{base:990,page:250,calendar:200,ticket:100,rsvp:1200,paid:990,donate:297,member:594}, // donate = 3 hrs, member = 6 hrs at $99/hr (custom build: payment gateway, tiers/receipts, testing). calendar + ticket profile = old $300 bundle, split – confirm
- xfer:{dom:0.5,mailSetup:1,mailbox:0.5,host:2,page:1.5}, // transfer/migration labour in HOURS at standard rate – confirm
+ sqPaid:[200,300],sqDon:[80,150],sqMem:[150,250], // set-up fee ranges when payments/memberships use Squarespace's built-in tools – confirm
+ terms:{page:[50,250],calendar:[150,300],ticket:[80,150],rsvp:[900,1400],paid:[700,1200],donate:[200,400],member:[450,750],news:[100,250]}, // one-time price ranges by complexity – confirm
+ xfer:{dom:[40,80],mailSetup:[80,150],mailbox:[40,80],host:[150,300],page:[50,250]}, // transfer/migration price ranges (one-time) – confirm
  sup:{perPerson:0.5,perExtraDevice:0.15}, // auto-suggested support hrs/month: ~0.4–0.7 requests per person/month (industry benchmark) x ~1 hr each, plus extra for devices beyond one per person
  prot:{home:{start:55,step:2,min:29},biz:{base:95,minDev:3},mob:{single:14,pack:24,size:3}}};
-const up=c=>Math.ceil(c*C.mark-1e-9); // -1e-9 stops floating-point noise (e.g. 35.2*1.25) rounding an exact dollar up
-const DOM={au:{n:'.au domain (renewal, DNS)',cost:27}}; // cost from Tony's Squarespace example
-const MAIL={g1:{n:'Google Workspace Business Starter',cost:11.80},g2:{n:'Google Workspace Business Standard',cost:23.60},m1:{n:'Microsoft 365 Business Basic',cost:16.80},m2:{n:'Microsoft 365 Business Standard (desktop apps)',cost:25.20}, m3:{n:'Microsoft 365 Business Standard with Copilot (desktop apps)',cost:35.20},m4:{n:'Microsoft 365 Business Standard with Copilot, no Teams (desktop apps)',cost:30.40}}; // verify before quoting. m3/m4 = Microsoft AU yearly-plan price (no monthly price published), ex GST. m2 cost = Microsoft AU list price, monthly (highest) rate, ex GST, Oct 2026
+// RM = which end of each range calc0() is pricing: 'lo' or 'hi'. calc() runs both and pairs the lines up.
+let RM='hi';
+const pick=a=>Array.isArray(a)?(RM=='lo'?a[0]:a[1]):a;
+const up=c=>Math.ceil(c*(RM=='lo'?C.passLo:C.passHi)-1e-9); // -1e-9 stops floating-point noise (e.g. 35.2*1.25) rounding an exact dollar up
+const lp=x=>RM=='lo'?Math.ceil(x*C.passLo/C.passHi-1e-9):x; // low end of a hand-set third-party price
+const cl=x=>Math.ceil(x-1e-9);
+const fr=(a,b)=>{a=cl(a);b=cl(b);if(b<a)[a,b]=[b,a];return a==b?f(a):'<span class="rng">'+f(a)+'–'+f(b)+'</span>'};
+const frt=(a,b)=>fr(a,b).replace(/<[^>]+>/g,''); // plain-text range for emails
+const frr=a=>fr(a[0],a[1]);
+const upR=c=>fr(Math.ceil(c*C.passLo-1e-9),Math.ceil(c*C.passHi-1e-9));
+const lpR=x=>fr(Math.ceil(x*C.passLo/C.passHi-1e-9),x);
+const DOM={au:{n:'.au domain registration and yearly renewal',cost:22.95,range:[27,35]}}; // range = price shown to client per domain per year (overrides cost x markup) // VentraIP .com.au renewal Oct 2026 (first year is often discounted to ~$9.95)
+const mR=k=>MAIL[k].range||[Math.ceil(MAIL[k].cost*C.passLo-1e-9),Math.ceil(MAIL[k].cost*C.passHi-1e-9)]; // per user per month [low, high]
+const DOMACT={none:'No domain needed',new:'Register a new domain',xfer:'Transfer a domain I already own to Tony',keep:'Keep my domain where it is (I\'ll give Tony access)'};
+const MAIL={g1:{n:'Google Workspace Business Starter',cost:11.80,range:[12,15]},g2:{n:'Google Workspace Business Standard',cost:23.60},m1:{n:'Microsoft 365 Business Basic',cost:16.80,range:[17,21]},m2:{n:'Microsoft 365 Business Standard (desktop apps)',cost:25.20}, m3:{n:'Microsoft 365 Business Standard with Copilot (desktop apps)',cost:35.20},m4:{n:'Microsoft 365 Business Standard with Copilot, no Teams (desktop apps)',cost:30.40}}; // verify before quoting. m3/m4 = Microsoft AU yearly-plan price (no monthly price published), ex GST. m2 cost = Microsoft AU list price, monthly (highest) rate, ex GST, Oct 2026
 const HOST={sqb:{n:'Squarespace Basic (hosting)',cost:288},sqc:{n:'Squarespace Core (hosting)',cost:468},sqp:{n:'Squarespace Plus (hosting)',cost:828},sqa:{n:'Squarespace Advanced (hosting)',cost:1788},wp:{n:'WordPress hosting (cheapest plan)',cost:222,fix:277.5},ot:{n:'Other platform',cost:0}};
 const PROT={home:{n:'Emsisoft Anti-Malware Home (per PC)',cost:40.31},biz:{n:'Emsisoft Business Security (per device)',cost:66.51/3},mob:{n:'Emsisoft Mobile Security (Android)',cost:10.08}};
+const WEB={starter:['One-page website','A single mobile-friendly page with your text and images. Simple and affordable, but it can\'t be expanded later or have pages added.'],basic:['Basic website (home, about and contact)','Three mobile-friendly pages: home, about and contact (with a contact form). You can add extra pages and features now or later.'],std:['Full website with better Google search visibility','Everything in the Basic website, plus search engine optimisation (page titles and descriptions, sitemap, Google Search Console and Google Business Profile linking) and Google Analytics, so more people find you and you can see how they did.']};
 const FEAT={calendar:['Event calendar',C.terms.calendar],ticket:['Ticketing platform profile (e.g. Humanitix, Eventbrite)',C.terms.ticket],rsvp:['Native RSVP ticketing with capacity tracking',C.terms.rsvp],paid:['Paid ticketing (card payments for events)',C.terms.paid],donate:['Donations',C.terms.donate],member:['Memberships',C.terms.member]};
 const TBC={booking:'Booking forms',blog:'Blog',store:'Online store'};
 const DESC={
@@ -159,10 +181,15 @@ const DESC={
   wp:'WordPress on VentraIP, an Australian host. Low cost and very flexible. Pages can be hand-built in HTML, which is fast and cheap to run and suits sites where Tony makes the changes. Easy editing by non-technical people needs extra set-up.',
   ot:'Wix, GoDaddy, an existing host or something else. Tony will quote hosting and set-up separately.'}};
 const EDIT={tony:'Tony makes all the edits',mix:'Some pages edited by the client, the rest by Tony',client:'The client edits everything'};
-const STEPS=[['dom','Domain & email'],['site','Website scope'],['host','Hosting & management'],['xfer','Transfers & migration'],['time','Timeline'],['sup','IT support'],['prot','Protection'],['rev','Review & quote']];
-let S={i:0,skip:{},client:'',contact:'',dom:0,mail:'none',users:1,hosting:'none',edit:'tony',editors:1,mgmt:false,html:'no',xdom:0,xmail:0,xhost:false,xpages:0,xprov:'',pages:0,feat:{},tbc:{},base:false,time:'normal',sup:'adhoc',people:1,devs:1,hrs:0.5,hrsAuto:true,days:null,qts:0,extTimes:'',roll:false,rollHrs:1,bank:0,term:0,hours:'bh',resp:'std',ah:false,visits:0,km:'',home:0,biz:0,mob:0};
+const STEPS=[['dom','Domain'],['mail','Email'],['site','Website scope'],['host','Hosting & management'],['xfer','Transfers & migration'],['time','Timeline'],['sup','IT support'],['prot','Protection'],['rev','Review & quote']];
+let S={i:0,skip:{},client:'',contact:'',domAct:'none',domWant:'',dom:1,aliases:'',web:'none',mail:'none',users:1,hosting:'none',edit:'tony',editors:1,mgmt:false,html:'no',xdom:0,xmail:0,xhost:false,xpages:0,xprov:'',pages:0,feat:{},tbc:{},base:false,time:'normal',sup:'adhoc',people:1,devs:1,hrs:0.5,hrsAuto:true,days:null,qts:0,extTimes:'',roll:false,rollHrs:1,bank:0,term:0,hours:'bh',resp:'std',ah:false,visits:0,km:'',home:0,biz:0,mob:0};
 try{const x=localStorage.getItem('tts2');if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
 if(S.hosting=='sq')S.hosting='sqb';
+// migrate quotes saved by the older version
+if(S.base){S.web='std';delete S.base}
+if(S.domAct=='none'&&S.xdom>0){S.domAct='xfer';S.dom=S.xdom;S.xdom=0}
+if(!(S.dom>=1))S.dom=1;
+if(S.web=='starter'){S.pages=0;S.feat={};S.tbc={}}
 if(!S.qts){S.qts=Date.now();try{localStorage.setItem('tts2',JSON.stringify(S))}catch(e){}}
 const $=id=>document.getElementById(id),$$=n=>Math.round(n*100)/100,f=n=>'$'+(Math.round(n*100)/100).toLocaleString('en-AU',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -179,7 +206,7 @@ function setSize(n){A.size=n;applyA()}function togHC(){A.hc=!A.hc;applyA()}
 applyA();
 let uid=0;function linkLabels(){document.querySelectorAll('#step label').forEach(l=>{if(l.control)return;const e=l.nextElementSibling;if(e&&/^(INPUT|SELECT)$/.test(e.tagName)){if(!e.id)e.id='f'+(++uid);l.htmlFor=e.id}})}
 let liveT,liveOn=false;['input','change','click'].forEach(t=>addEventListener(t,()=>{liveOn=true},{once:true,capture:true}));
-function announce(r){clearTimeout(liveT);liveT=setTimeout(()=>{const e=$('live');if(e&&liveOn)e.textContent='Estimate updated. One-off total '+f(r.once)+'. Yearly total '+f(r.yr)+', about '+f(r.mo)+' per month. All prices include GST.'},900)}
+function announce(r){clearTimeout(liveT);liveT=setTimeout(()=>{const e=$('live');if(e&&liveOn)e.textContent='Estimate updated. One-off total '+frt(r.onceLo,r.once)+'. Yearly total '+frt(r.yrLo,r.yr)+'. All prices include GST.'},900)}
 
 // ---- Protection volume pricing ----
 function pHome(n){if(!n)return null;const p=C.prot.home,per=Math.max(p.min,p.start-p.step*(n-1));return{total:per*n,d:n>1?f(per)+' per licence (volume price)':f(per)+' per licence'}}
@@ -194,7 +221,7 @@ if(S.hrsAuto)S.hrs=sugHrs();
 // ---- Line calculation ----
 function hrsTxt(h){return h==1?'1 hour':h+' hours'}
 function mgmtCalc(){const M=C.mgmt.min,sq=String(S.hosting).startsWith('sq'),on=!S.skip.site,pr=[];let t=sq?M.baseSq:M.base;pr.push('website '+t);
- const dom=S.skip.dom?0:S.dom,us=(S.skip.dom||S.mail=='none')?0:S.users,add=(v,l)=>{if(v>0){t+=v;pr.push(l+' '+v)}};
+ const dom=(S.skip.dom||S.domAct=='none')?0:S.dom,us=(S.skip.mail||S.mail=='none')?0:S.users,add=(v,l)=>{if(v>0){t+=v;pr.push(l+' '+v)}};
  add(Math.max(0,dom-1)*M.domain,'extra domains');add(Math.max(0,us-M.mailFree)*M.mailUser,'extra mailboxes');
  if(on){add(S.pages*M.page,'pages');if(S.feat.calendar)add(M.calendar,'calendar');if(S.feat.ticket)add(M.ticket,'ticketing');if(S.feat.rsvp)add(M.rsvp,'RSVP');if(S.feat.paid&&(S.feat.calendar||S.feat.rsvp))add(sq?M.paidSq:M.paid,'paid ticketing');if(S.feat.donate)add(sq?M.donateSq:M.donate,'donations');if(S.feat.member)add(sq?M.memberSq:M.member,'memberships')}
  const H=Math.ceil(t/30)*30/60,pre=S.mpay!='mo',incl=pre?H+C.mgmt.bonus/60:H,rate=pre?C.rate*(1-C.mgmt.disc):C.rate,mo=Math.ceil(H*rate);
@@ -207,31 +234,37 @@ const rollCap=()=>Math.min(Math.max(1,Math.round(+S.rollHrs)||1),+S.bank||1);
 const rollMo=()=>Math.ceil(rollCap()*C.rate*C.roll.pct*(1-(C.prepay[S.term]||0))-1e-9);
 function calc0(lab){
  const L=[],k=x=>!S.skip[x];
- const lb=(n,hrs,qty,d)=>L.push({n,d,once:Math.ceil(Math.ceil(hrs*C.rate)*qty*lab-1e-9),cost:hrs*C.rate*qty*lab*.5,labour:1});
- if(k('dom')){if(S.dom>0)L.push({n:DOM.au.n+' ×'+S.dom,yr:up(DOM.au.cost)*S.dom,cost:DOM.au.cost*S.dom,dom:1});
-  if(S.mail!='none'){const m=MAIL[S.mail];L.push({n:m.n+' ×'+S.users+' user(s)',yr:up(m.cost)*12*S.users,cost:m.cost*12*S.users,d:f(up(m.cost))+' per user per month'})}}
- if(k('host')){if(S.hosting!='none'){const h=HOST[S.hosting];if(h.cost)L.push({n:h.n,yr:h.fix||up(h.cost),cost:h.cost,web:1,keep:h.fix?1:0});else L.push({n:'Hosting on another platform',tbc:1})}
+ const lb=(n,rg,qty,d)=>L.push({n,d,once:Math.ceil(pick(rg)*qty*lab-1e-9),cost:pick(rg)*qty*lab*.5,labour:1});
+ if(k('dom')&&S.domAct!='none'){const n=S.dom;
+  if(S.domAct=='xfer')lb('Domain transfer to Tony ×'+n,C.xfer.dom,n,'Unlock, transfer code and DNS records recreated. You will need the transfer code from your current registrar.');
+  if(S.domAct=='new'||S.domAct=='xfer')L.push({n:DOM.au.n+' ×'+n,yr:pick(DOM.au.range)*n,cost:DOM.au.cost*n,dom:1,d:'Registered in your business name. Renews every year.'});}
+ if(k('mail')&&S.mail!='none'){const m=MAIL[S.mail],u=Math.max(1,S.users);
+  L.push({n:m.n+' ×'+u+' user'+(u>1?'s':''),yr:pick(mR(S.mail))*12*u,cost:m.cost*12*u,d:frt(...mR(S.mail))+' per user per month. Each user is a separate inbox and login; extra addresses (aliases) are free.'});
+  lb('Email set-up – first user',C.mailSet.first,1,'Domain email records (incl. spam protection), inbox, aliases, signature and a quick walkthrough.');
+  if(u>1)lb('Email set-up – additional users ×'+(u-1),C.mailSet.extra,u-1,'Inbox, aliases and signature for each extra user.')}
+ if(k('host')){if(S.hosting!='none'){const h=HOST[S.hosting];if(h.cost)L.push({n:h.n,yr:h.fix?lp(h.fix):up(h.cost),cost:h.cost,web:1,keep:h.fix?1:0});else L.push({n:'Hosting on another platform',tbc:1})}
   if(S.mgmt){const m=mgmtCalc();L.push({n:'Monthly website management: '+hrsTxt(m.incl)+' of my time each month',mo:m.mo,cost:m.H*C.floor*12/12,web:1,d:'Website maintenance and adjustments, updates, backups, security patching and uptime reports. '+(m.pre?'I expect your site to need about '+hrsTxt(m.H)+' a month, so by paying yearly in advance ('+f(m.yr)+' a year) you get an extra '+C.mgmt.bonus+' minutes. ':'Billed monthly at the standard rate. ')+'Time beyond this is billed at '+f(C.rate)+'/hour.'})}}
  if(k('xfer')){const x=C.xfer;
-  if(S.xdom>0)lb('Domain transfer ×'+S.xdom,x.dom,S.xdom,'Unlock, transfer code and DNS records recreated. Registry renewal billed separately.');
   if(S.xmail>0){lb('Email migration ×'+S.xmail+' mailbox(es)',x.mailbox,S.xmail,'Mailbox contents copied and devices reconnected.');lb('Email cut-over (DNS and mail routing)',x.mailSetup,1,'')}
   if(S.xhost)lb('Move existing website to new hosting (as-is)',x.host,1,'Files and database copied, tested, then pointed at the new host.');
   if(S.xpages>0)lb('Rebuild existing pages on the new site ×'+S.xpages,x.page,S.xpages,'Content already written; layout rebuilt.')}
- if(k('site')){if(S.base)L.push({n:'Website foundation setup (single page, mobile-friendly, newsletter integration)',once:C.terms.base*lab,cost:C.terms.base*.5*lab,labour:1});
-  if(S.pages>0)L.push({n:'Additional website pages ×'+S.pages,once:C.terms.page*S.pages*lab,cost:C.terms.page*S.pages*.5*lab,labour:1});
+ if(k('site')){const W=C.web[S.web];if(W)lb('Website: '+WEB[S.web][0],W,1,WEB[S.web][1]);
+  const ex=S.web!='starter';
+  if(ex&&S.pages>0)lb('Additional website pages ×'+S.pages,C.terms.page,S.pages,'Priced per page by complexity: a simple text and image page sits at the low end; galleries, forms or custom layouts at the high end.');
+  if(ex&&S.feat.news)lb('Newsletter sign-up integration',C.terms.news,1,'Sign-up form connected to your mailing list (e.g. Mailchimp).');
   const onSq=String(S.hosting).startsWith('sq');
   const SQP={paid:[C.sqPaid,'Paid ticketing'],donate:[C.sqDon,'Donations'],member:[C.sqMem,'Memberships']};
-  for(const x in FEAT)if(S.feat[x]&&(x!='paid'||S.feat.calendar||S.feat.rsvp)){if(SQP[x]&&onSq){L.push({n:SQP[x][1]+' on Squarespace (built into your plan – set-up only)',d:'Saves '+f((C.terms[x]-SQP[x][0])*lab)+' compared with a custom payment build',once:SQP[x][0]*lab,cost:SQP[x][0]*.5*lab,labour:1});continue}L.push({n:FEAT[x][0],once:FEAT[x][1]*lab,cost:FEAT[x][1]*.5*lab,labour:1})}
-  for(const x in S.tbc)if(S.tbc[x])L.push({n:TBC[x]+' (quoted separately at $'+C.rate+'/hr)',tbc:1})}
+  if(ex)for(const x in FEAT)if(S.feat[x]&&(x!='paid'||S.feat.calendar||S.feat.rsvp)){if(SQP[x]&&onSq){L.push({n:SQP[x][1]+' on Squarespace (built into your plan – set-up only)',d:'Saves about '+f(C.terms[x][1]-SQP[x][0][1])+' compared with a custom payment build',once:pick(SQP[x][0])*lab,cost:pick(SQP[x][0])*.5*lab,labour:1});continue}L.push({n:FEAT[x][0],once:pick(FEAT[x][1])*lab,cost:pick(FEAT[x][1])*.5*lab,labour:1})}
+  if(ex)for(const x in S.tbc)if(S.tbc[x])L.push({n:TBC[x]+' (quoted separately at $'+C.rate+'/hr)',tbc:1})}
  if(k('sup')&&S.sup=='managed'){const h=S.bank,d=C.prepay[S.term]||0;
   if(h>0){L.push({n:h+' hour(s)/month support bank, '+(S.term?S.term+'-month prepay':'billed monthly in advance'),mo:$$(h*C.rate*(1-d)),cost:h*C.floor,d:d?pcnt(d)+'% prepay discount':''});
    if(S.roll)L.push({n:'Rollover: up to '+rollCap()+' unused hour(s) carry into the next month',mo:rollMo(),cost:rollCap()*C.floor*C.roll.pct,d:'Unused support hours up to this amount are added to the following month instead of expiring.'})}
   if(S.hours=='x24')L.push({n:'24/7 on-call availability ('+C.x24.months+'-month minimum term)',mo:x24Mo(),cost:C.x24.cost*12,d:'Round-the-clock cover with a response target of about 1 hour for urgent issues. Minimum term '+C.x24.months+' months ('+f(x24Total())+' in total); remaining months are payable if the service ends early. Any urgent or emergency work done is billed on top at '+f(C.urgent)+'/hour, minimum 1 hour.'});
   if((S.resp!='std'&&S.hours!='x24')||S.hours=='ext')L.push({n:'Priority response / extended hours',tbc:1})}
  if(k('prot')){let p;
-  if(p=pHome(S.home))L.push({n:PROT.home.n.replace(' (per PC)','')+' ×'+S.home,yr:p.total,cost:PROT.home.cost*S.home,d:p.d});
-  if(p=pBiz(S.biz))L.push({n:PROT.biz.n.replace(' (per device)','')+' ×'+S.biz,yr:p.total,cost:Math.max(C.prot.biz.minDev,S.biz)*PROT.biz.cost,d:p.d});
-  if(p=pMob(S.mob))L.push({n:PROT.mob.n+' ×'+S.mob,yr:p.total,cost:PROT.mob.cost*S.mob,d:p.d})}
+  if(p=pHome(S.home))L.push({n:PROT.home.n.replace(' (per PC)','')+' ×'+S.home,yr:lp(p.total),cost:PROT.home.cost*S.home,d:p.d});
+  if(p=pBiz(S.biz))L.push({n:PROT.biz.n.replace(' (per device)','')+' ×'+S.biz,yr:lp(p.total),cost:Math.max(C.prot.biz.minDev,S.biz)*PROT.biz.cost,d:p.d});
+  if(p=pMob(S.mob))L.push({n:PROT.mob.n+' ×'+S.mob,yr:lp(p.total),cost:PROT.mob.cost*S.mob,d:p.d})}
  let once=0,yr=0,cost1=0,costY=0;
  L.forEach(l=>{if(l.once)l.once=Math.ceil(l.once-1e-9);if(l.mo)l.mo=Math.ceil(l.mo-1e-9);if(l.yr&&!l.keep)l.yr=Math.ceil(l.yr-1e-9)});
  L.forEach(l=>{if(l.mo)l.yr=l.mo*12;if(l.once)once+=l.once;if(l.yr){yr+=l.yr;costY+=l.cost||0}else cost1+=l.cost||0});
@@ -251,7 +284,11 @@ function depCalc(r){const D=C.dep;let u=0,d=0;
  let a=Math.ceil(u*D.gst-1e-9),dm=Math.ceil(d*D.gst-1e-9),fee=Math.max(D.min,Math.ceil(r.once*D.pct-1e-9)),n=dm+fee;
  const cap=Math.ceil(all);if(n>cap)n=cap;if(a+n>cap)a=cap-n;
  return{a,n,dm,fee,tot:a+n}}
-function calc(){const r1=calc0(1),t=timing(r1.once);let r=r1;if(t&&t.lab!=1)r=calc0(t.lab);r.t=t||null;r.dep=depCalc(r);return r}
+function calcM(m,lab){RM=m;try{return calc0(lab)}finally{RM='hi'}}
+// Runs the price engine at the low and high end of every range; r.* holds the high end, r.*Lo and each line's .lo the low end.
+function calc(){let lo=calcM('lo',1),hi=calcM('hi',1);const t=timing((lo.once+hi.once)/2);
+ if(t&&t.lab!=1){lo=calcM('lo',t.lab);hi=calcM('hi',t.lab)}
+ const r=hi;r.L.forEach((l,i)=>l.lo=lo.L[i]||l);r.onceLo=lo.once;r.yrLo=lo.yr;r.moLo=lo.mo;r.lo=lo;r.t=t||null;r.dep=depCalc(lo);return r}
 function qnum(){const P=new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Perth',year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(S.qts)).reduce((o,x)=>(o[x.type]=x.value,o),{});
  const k=(S.client.trim()+'|'+S.contact.trim()).toLowerCase();let h=0,g=7;for(const c of k){h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;g=(Math.imul(g,131)+c.charCodeAt(0))>>>0}
  const e=x=>x.toString(36).toUpperCase().padStart(7,'0').slice(-4);
@@ -278,7 +315,7 @@ function timeUI(t){const T=C.time;let m;
  <p class="note"><b>Please note:</b> ${TIMEDISC}</p>`}
 // ---- Hosting recommendation ----
 function wantsPay(){return S.feat.paid||S.feat.donate||S.feat.member||S.tbc.store}
-function sqNote(){if(!wantsPay())return '';const d=Math.ceil(HOST.sqc.cost*C.mark)-Math.ceil(HOST.sqb.cost*C.mark);return `<div class="rec"><b>You chose payments or an online store</b><p>${String(S.hosting).startsWith('sq')?'Selling is built into Squarespace, so payments set-up is '+f(C.sqPaid)+' instead of '+f(C.terms.paid)+'.':'On Squarespace, payments set-up is '+f(C.sqPaid)+' instead of '+f(C.terms.paid)+' because selling is built in.'} Basic charges a 2% online store fee and 7% on memberships and digital content. Core costs ${f(d)} more a year and lowers those to 0% and 5%.</p></div>`}
+function sqNote(){if(!wantsPay())return '';const d=Math.ceil(HOST.sqc.cost*C.passHi)-Math.ceil(HOST.sqb.cost*C.passHi);return `<div class="rec"><b>You chose payments or an online store</b><p>${String(S.hosting).startsWith('sq')?'Selling is built into Squarespace, so payments set-up is '+frr(C.sqPaid)+' instead of '+frr(C.terms.paid)+'.':'On Squarespace, payments set-up is '+frr(C.sqPaid)+' instead of '+frr(C.terms.paid)+' because selling is built in.'} Basic charges a 2% online store fee and 7% on memberships and digital content. Core costs ${f(d)} more a year and lowers those to 0% and 5%.</p></div>`}
 function recHost(){
  const h=S.html,e=S.edit;let p,t;
  if(e=='tony'){p='wp';t='Because only Tony edits the site, WordPress hosting with hand-built HTML pages is the best value. It is the cheapest option and no one else needs an editing login.'}
@@ -293,37 +330,59 @@ const sel=(k,o,extra='')=>`<select onchange="S.${k}=this.value${extra};save();up
 const num=(k,min=0,re=0)=>`<input type="number" min="${min}" value="${S[k]}" oninput="S.${k}=Math.max(${min},+this.value||0);save();${re?'go(S.i)':'upd()'}">`;
 const chk=(obj,key,n,p,sm,re)=>`<label class="opt"><input type="checkbox" ${S[obj][key]?'checked':''} onchange="${re?`tf('${key}',this.checked)`:`S.${obj}['${key}']=this.checked;save();upd()`}"><span>${n}<small>${sm||''}</small></span><span class="p">${p}</span></label>`;
 function tf(k,v){S.feat[k]=v;if(!S.feat.calendar&&!S.feat.rsvp)S.feat.paid=false;save();go(S.i)}
-const info=(items,cur)=>`<div class="info">${items.map(([k,t,d])=>`<div class="${cur==k?'sel':''}"><b>${t}</b><span>${d}</span></div>`).join('')}</div>`;
+function setWeb(k){S.web=k;if(k=='starter'){S.pages=0;S.feat={};S.tbc={}}save();go(S.i)}
+const info=(items,cur,key)=>`<div class="info${key?' pick':''}">${items.map(([k,t,d])=>key?`<div class="${cur==k?'sel':''}" role="radio" aria-checked="${cur==k}" tabindex="0" onclick="pickInfo('${key}','${k}')" onkeydown="if(event.key=='Enter'||event.key==' '){event.preventDefault();pickInfo('${key}','${k}')}"><b>${t}</b><span>${d}</span></div>`:`<div class="${cur==k?'sel':''}"><b>${t}</b><span>${d}</span></div>`).join('')}</div>`;
+function pickInfo(key,v){S[key]=v;save();go(S.i);const e=document.querySelector('#step .info.pick [aria-checked="true"]');if(e)e.focus({preventScroll:true})}
 function body(id){
  const disabled=S.skip[id];let h=id=='rev'?'':naBox(id);if(disabled&&id!='rev')return h+'<p class="note">This section is skipped and will not appear in your quote.</p>';
- if(id=='dom')h+=`<h2>Domain & email</h2><label>.au domain names to manage</label>${num('dom')}<p class="note">Renewal and DNS setup, ${f(up(DOM.au.cost))} per year (ongoing) for each domain.</p>
-  <label>Email hosting</label>${sel('mail',{none:'No email hosting needed',g1:'Google Workspace Starter – '+f(up(MAIL.g1.cost))+' per user per month (ongoing)',g2:'Google Workspace Standard – '+f(up(MAIL.g2.cost))+' per user per month (ongoing)',m1:'Microsoft 365 Business Basic – '+f(up(MAIL.m1.cost))+' per user per month (ongoing)',m2:'Microsoft 365 Business Standard (includes desktop apps) – '+f(up(MAIL.m2.cost))+' per user per month (ongoing)',m3:'Microsoft 365 Business Standard with Copilot – '+f(up(MAIL.m3.cost))+' per user per month (ongoing)',m4:'Microsoft 365 Business Standard with Copilot, no Teams – '+f(up(MAIL.m4.cost))+' per user per month (ongoing)'},';go(S.i)')}
-  ${info([['g1','Google Workspace Starter',DESC.mail.g1],['g2','Google Workspace Standard',DESC.mail.g2],['m1','Microsoft 365 Business Basic',DESC.mail.m1],['m2','Microsoft 365 Business Standard (with desktop apps)',DESC.mail.m2],['m3','Standard with Copilot',DESC.mail.m3],['m4','Standard with Copilot, no Teams',DESC.mail.m4]],S.mail)}
-  <label>Number of email addresses</label>${num('users',1)}<p class="note">Prices shown per user, billed yearly in this quote. Eligible nonprofits may qualify for lower Microsoft or Google pricing; ask Tony.</p>`;
+ if(id=='dom'){const a=S.domAct,lbl=a=='xfer'||a=='keep'?'Your current domain name(s)':'What domain would you like, or what is your business name?';
+  h+=`<h2>Domain name</h2><p class="note">Your domain is your address online, e.g. yourbusiness.com.au. It is used for your website and your email addresses.</p>
+  <label>What do you need?</label>${sel('domAct',DOMACT,';go(S.i)')}
+  ${a!='none'?`<label for="domWant">${lbl}</label><input id="domWant" value="${esc(S.domWant)}" placeholder="${a=='new'?'e.g. Crux Civil Pty Ltd, or cruxcivil.com.au':'e.g. mybusiness.com.au'}" oninput="S.domWant=this.value;save();Q()">
+  <p class="note">${a=='new'?'Not sure what to choose? Just type your business name and Tony will check what\'s available and help you pick a good one before anything is registered.':a=='xfer'?'Tony moves the domain into your business name on his account, so renewals and DNS are looked after. Your website and email keep working during the move.':'Your domain stays with your current provider and you keep paying them. You\'ll just need to give Tony access to update its settings.'}</p>`:''}
+  ${a=='new'||a=='xfer'?`<label>How many domains?</label>${num('dom',1)}
+  <p class="note">${a=='xfer'?'Transfer: '+frr(C.xfer.dom)+' each (one-time). ':''}Registration and renewal: ${frr(DOM.au.range)} per domain per year (ongoing). To register a .com.au, your business needs an ABN or ACN.</p>`:''}`}
+ if(id=='mail'){const u=Math.max(1,S.users),mo=k=>frr(mR(k))+' per user per month';
+  h+=`<h2>Business email</h2><p class="note">Professional email on your own domain, e.g. you@yourbusiness.com.au. Hosting is passed on at the provider's price plus a small processing fee. You only pay Tony a one-off set-up fee, then support only if you need it.</p>
+  <label>Email platform</label><select onchange="S.mail=this.value;save();go(S.i)"><option value="none" ${S.mail=='none'?'selected':''}>No email hosting needed</option>
+  <optgroup label="Microsoft 365 (Outlook)">${['m1','m2','m3','m4'].map(k=>`<option value="${k}" ${S.mail==k?'selected':''}>${MAIL[k].n.replace(' (desktop apps)','')} – ${frt(...mR(k))} per user per month</option>`).join('')}</optgroup>
+  <optgroup label="Google Workspace (Gmail)">${['g1','g2'].map(k=>`<option value="${k}" ${S.mail==k?'selected':''}>${MAIL[k].n} – ${frt(...mR(k))} per user per month</option>`).join('')}</optgroup></select>
+  <p class="note">Choose from the dropdown, or click a plan below.</p><h3>Microsoft 365</h3>${info([['m1','Business Basic – '+mo('m1'),DESC.mail.m1],['m2','Business Standard (with desktop apps) – '+mo('m2'),DESC.mail.m2],['m3','Standard with Copilot – '+mo('m3'),DESC.mail.m3],['m4','Standard with Copilot, no Teams – '+mo('m4'),DESC.mail.m4]],S.mail,'mail')}
+  <h3>Google Workspace</h3>${info([['g1','Business Starter – '+mo('g1'),DESC.mail.g1],['g2','Business Standard – '+mo('g2'),DESC.mail.g2]],S.mail,'mail')}
+  ${S.mail!='none'?`<div class="rec"><b>Users vs email addresses</b><p>Email is charged per <b>user</b>, not per email address. Each user gets their own private inbox, login and storage.</p><p>Each user can also have extra email addresses (aliases) at no extra cost. For example, one person could receive mail sent to their name@, info@, accounts@ and quotes@, all in the same inbox. You only need another user if someone needs their own separate inbox and login.</p></div>
+  <label>Number of users (separate inboxes)</label>${num('users',1)}
+  <label for="aliases">Extra email addresses (aliases) you'd like – free</label><input id="aliases" value="${esc(S.aliases)}" placeholder="e.g. info@, accounts@, quotes@" oninput="S.aliases=this.value;save();Q()">
+  <h3>Set-up (one-time)</h3><table><tr><td>First user: domain email records (incl. spam protection), inbox, aliases, signature and a quick walkthrough</td><td class="r">${frr(C.mailSet.first)}</td></tr><tr><td>Each additional user: inbox, aliases and signature</td><td class="r">${frr(C.mailSet.extra)}</td></tr>${u>1?`<tr class="tot"><td>Set-up for ${u} users</td><td class="r">${fr(C.mailSet.first[0]+C.mailSet.extra[0]*(u-1),C.mailSet.first[1]+C.mailSet.extra[1]*(u-1))}</td></tr>`:''}</table>
+  <p class="note">There's no monthly fee from Tony. If you need help later, such as adding a user or alias, resetting a password or setting up a new phone, it's ${f(C.rate)}/hour, mostly done remotely. You can also add a company card to the subscription directly instead, with no processing fee. Eligible nonprofits may qualify for lower Microsoft or Google pricing; ask Tony.</p>`:''}`}
  if(id=='host'){const r=recHost();h+=`<h2>Website hosting & management</h2>
   <h3>Who will edit the website?</h3><p class="note">This helps work out the best platform: if Tony makes every change, a cheaper setup is fine; if you want to edit pages yourself, every page needs to be easy to edit.</p>
   <label>Editing arrangement</label>${sel('edit',EDIT,';go(S.i)')}
   <div class="row"><div><label>People who need editing access</label>${num('editors',1,1)}</div><div><label>Do you know HTML?</label>${sel('html',{no:'No',some:'A little',yes:'Yes'},';go(S.i)')}</div></div>
   <div class="rec"><b>Recommended: ${HOST[r.p].n.split(' (')[0]}</b><p>${r.t}</p>${S.hosting!=r.p?`<button class="g" onclick="S.hosting='${r.p}';save();go(S.i)">Use the recommended platform</button>`:'<p class="note">✓ Selected below.</p>'}</div>
-  ${sqNote()}<label>Platform</label>${sel('hosting',{none:'No hosting needed',sqb:'Squarespace Basic – '+f(up(HOST.sqb.cost))+' per year (ongoing)',sqc:'Squarespace Core – '+f(up(HOST.sqc.cost))+' per year (ongoing)',sqp:'Squarespace Plus – '+f(up(HOST.sqp.cost))+' per year (ongoing)',sqa:'Squarespace Advanced – '+f(up(HOST.sqa.cost))+' per year (ongoing)',wp:'WordPress hosting – '+f(HOST.wp.fix)+' per year (ongoing)',ot:'Other / not sure'},';go(S.i)')}
-  ${info([['sqb','Squarespace Basic',DESC.host.sq+' Up to 2 contributors; 2% online store transaction fee.'],['sqc','Squarespace Core',DESC.host.sq+' Unlimited contributors, advanced analytics, CSS and JavaScript customisation, 0% store fee (5% on content and memberships).'],['sqp','Squarespace Plus',DESC.host.sq+' Everything in Core, plus lower card rates (from 1.6% + 30c), shipping and tax tools, sales funnel analytics and API integrations.'],['sqa','Squarespace Advanced',DESC.host.sq+' Everything in Plus, with the lowest card rates (from 1.4% + 30c) and 0% fees on memberships and content.'],['wp','WordPress (VentraIP)',DESC.host.wp],['ot','Other platform',DESC.host.ot]],S.hosting)}
+  ${sqNote()}<label>Platform</label>${(()=>{const hr=k=>frt(Math.ceil(HOST[k].cost*C.passLo-1e-9),Math.ceil(HOST[k].cost*C.passHi-1e-9));return sel('hosting',{none:'No hosting needed',sqb:'Squarespace Basic – '+hr('sqb')+' per year (ongoing)',sqc:'Squarespace Core – '+hr('sqc')+' per year (ongoing)',sqp:'Squarespace Plus – '+hr('sqp')+' per year (ongoing)',sqa:'Squarespace Advanced – '+hr('sqa')+' per year (ongoing)',wp:'WordPress hosting – '+frt(Math.ceil(HOST.wp.fix*C.passLo/C.passHi-1e-9),HOST.wp.fix)+' per year (ongoing)',ot:'Other / not sure'},';go(S.i)')})()}
+  ${info([['sqb','Squarespace Basic',DESC.host.sq+' Up to 2 contributors; 2% online store transaction fee.'],['sqc','Squarespace Core',DESC.host.sq+' Unlimited contributors, advanced analytics, CSS and JavaScript customisation, 0% store fee (5% on content and memberships).'],['sqp','Squarespace Plus',DESC.host.sq+' Everything in Core, plus lower card rates (from 1.6% + 30c), shipping and tax tools, sales funnel analytics and API integrations.'],['sqa','Squarespace Advanced',DESC.host.sq+' Everything in Plus, with the lowest card rates (from 1.4% + 30c) and 0% fees on memberships and content.'],['wp','WordPress (VentraIP)',DESC.host.wp],['ot','Other platform',DESC.host.ot]],S.hosting,'hosting')}
   <label class="opt"><input type="checkbox" ${S.mgmt?'checked':''} onchange="S.mgmt=this.checked;save();upd()"><span>Monthly website management<small>${hrsTxt(mgmtCalc().incl)} of my time each month for website maintenance and adjustments, updates, backups, security patching and uptime reports. ${mgmtCalc().pre?'I expect your site to need about '+hrsTxt(mgmtCalc().H)+' a month, so paying yearly in advance gets you an extra '+C.mgmt.bonus+' minutes per month of website support. That\'s '+(C.mgmt.bonus*12/60)+' hours a year! ':''}Time beyond this is billed at ${f(C.rate)}/hour.</small></span><span class="p">${f(mgmtCalc().mo)} per month (ongoing${mgmtCalc().pre?', billed yearly':''})</span></label>
   ${S.mgmt?`<label>How would you like to pay for management?</label>${sel('mpay',{yr:'Yearly in advance (extra '+C.mgmt.bonus+' minutes a month included)',mo:'Monthly (standard rate, no extra time)'},';go(S.i)')}`:''}
   <p class="note">Without management, the site can still get support at ${f(C.rate)}/hour.</p>`}
  if(id=='xfer')h+=`<h2>Transfers & migration</h2><p class="note">Already have a domain, email, hosting or website somewhere else? Tony can move it across without you losing mail or website visitors. Prices are labour only; any new licences or hosting are charged in the other sections.</p>
   <label>Current provider(s), e.g. GoDaddy, Wix, Telstra</label><input value="${esc(S.xprov)}" oninput="S.xprov=this.value;save();Q()">
-  <label>Domain names to transfer (${f(Math.ceil(C.xfer.dom*C.rate))} each, one-time)</label>${num('xdom')}<p class="note">You will need to provide the transfer code from your current registrar.</p>
-  <label>Mailboxes to move (${f(Math.ceil(C.xfer.mailbox*C.rate))} each, plus ${f(Math.ceil(C.xfer.mailSetup*C.rate))} cut-over, all one-time)</label>${num('xmail')}
-  <label class="opt"><input type="checkbox" ${S.xhost?'checked':''} onchange="S.xhost=this.checked;save();upd()"><span>Move my existing website to the new hosting as-is<small>Files and database copied across, tested, then switched over.</small></span><span class="p">${f(Math.ceil(C.xfer.host*C.rate))} one-time</span></label>
-  <label>Existing pages to rebuild on the new site (${f(Math.ceil(C.xfer.page*C.rate))} each, one-time)</label>${num('xpages')}<p class="note">For pages whose content is already written. Brand new pages are priced under Website scope.</p>`;
- if(id=='site'){const ev=S.feat.calendar||S.feat.rsvp;h+=`<h2>Website scope & features</h2><label class="opt"><input type="checkbox" ${S.base?'checked':''} onchange="S.base=this.checked;save();upd()"><span>Foundation setup<small>Single-page, mobile-friendly site with newsletter integration</small></span><span class="p">${f(C.terms.base)} one-time</span></label>
-  <label>Additional pages (${f(C.terms.page)} each, one-time)</label>${num('pages')}<h3>Features</h3>
-  ${chk('feat','calendar',FEAT.calendar[0],f(FEAT.calendar[1])+' one-time','Upcoming events listed on your site',1)}
-  ${chk('feat','ticket',FEAT.ticket[0],f(FEAT.ticket[1])+' one-time','Set up and link your events on an external ticketing platform')}
-  ${chk('feat','rsvp',FEAT.rsvp[0],f(FEAT.rsvp[1])+' one-time','RSVPs taken on your own site, with limits per event',1)}
-  ${ev?`<div class="pop"><b>Selling tickets?</b><p class="note">Add payments to your events so people can pay online.</p>${chk('feat','paid',FEAT.paid[0],f(FEAT.paid[1])+' one-time','Card payments for event tickets')}<p class="note">Choose a Squarespace plan in the next step and set-up drops to ${f(C.sqPaid)}, because payments are built into every Squarespace plan.</p></div>`:''}
-  ${chk('feat','donate',FEAT.donate[0],f(FEAT.donate[1])+' one-time','Accept one-off or recurring donations online'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+f(C.sqDon)+')':''))}
-  ${chk('feat','member',FEAT.member[0],f(FEAT.member[1])+' one-time','Membership sign-ups with payments'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+f(C.sqMem)+')':''))}
+  <p class="note">Moving a domain name? Choose "Transfer a domain I already own" in the Domain step.</p>
+  <label>Mailboxes to move (${frr(C.xfer.mailbox)} each, plus ${frr(C.xfer.mailSetup)} cut-over, all one-time)</label>${num('xmail')}
+  <label class="opt"><input type="checkbox" ${S.xhost?'checked':''} onchange="S.xhost=this.checked;save();upd()"><span>Move my existing website to the new hosting as-is<small>Files and database copied across, tested, then switched over.</small></span><span class="p">${frr(C.xfer.host)} one-time</span></label>
+  <label>Existing pages to rebuild on the new site (${frr(C.xfer.page)} each, one-time)</label>${num('xpages')}<p class="note">For pages whose content is already written. Brand new pages are priced under Website scope.</p>`;
+ if(id=='site'){const ev=S.feat.calendar||S.feat.rsvp,ot=' one-time';
+  const pkg=k=>`<label class="opt"><input type="radio" name="web" ${S.web==k?'checked':''} onchange="setWeb('${k}')"><span>${k=='none'?'No new website':WEB[k][0]}<small>${k=='none'?'I only need pages or features added, or no website work.':WEB[k][1]}</small></span><span class="p">${k=='none'?'':frr(C.web[k])+ot}</span></label>`;
+  h+=`<h2>Website scope & features</h2><p class="note">Prices are ranges: where your site falls depends on how much content there is and how complex the layout is. Tony will confirm the exact price before work starts.</p>
+  <h3>Website package</h3><fieldset style="border:0;padding:0;margin:0"><legend class="sr">Website package</legend>${['none','starter','basic','std'].map(pkg).join('')}</fieldset>`;
+  if(S.web=='starter')h+=`<div class="rec"><b>One-page websites can't be expanded</b><p>The one-page website is a single page only. If you think you'll want more pages or features later, the Basic website is a better choice.</p></div>`;
+  else h+=`<label>Additional pages (${frr(C.terms.page)} each, one-time)</label>${num('pages')}<p class="note">A simple text and image page sits at the low end; pages with galleries, forms or custom layouts at the high end.</p><h3>Features</h3>
+  ${chk('feat','news','Newsletter sign-up integration',frr(C.terms.news)+ot,'Sign-up form connected to your mailing list (e.g. Mailchimp)')}
+  ${chk('feat','calendar',FEAT.calendar[0],frr(FEAT.calendar[1])+ot,'Upcoming events listed on your site',1)}
+  ${chk('feat','ticket',FEAT.ticket[0],frr(FEAT.ticket[1])+ot,'Set up and link your events on an external ticketing platform')}
+  ${chk('feat','rsvp',FEAT.rsvp[0],frr(FEAT.rsvp[1])+ot,'RSVPs taken on your own site, with limits per event',1)}
+  ${ev?`<div class="pop"><b>Selling tickets?</b><p class="note">Add payments to your events so people can pay online.</p>${chk('feat','paid',FEAT.paid[0],frr(FEAT.paid[1])+ot,'Card payments for event tickets')}<p class="note">Choose a Squarespace plan in the next step and set-up drops to ${frr(C.sqPaid)}, because payments are built into every Squarespace plan.</p></div>`:''}
+  ${chk('feat','donate',FEAT.donate[0],frr(FEAT.donate[1])+ot,'Accept one-off or recurring donations online'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+frr(C.sqDon)+')':''))}
+  ${chk('feat','member',FEAT.member[0],frr(FEAT.member[1])+ot,'Membership sign-ups with payments'+(String(S.hosting).startsWith('sq')?' (Squarespace set-up: '+frr(C.sqMem)+')':''))}
   ${Object.entries(TBC).map(([k,v])=>chk('tbc',k,v,'Quote on request')).join('')}`}
  if(id=='time'){const t=calc().t;h+='<h2>Timeline & urgency</h2>'+(t?timeUI(t):'<p class="note">Add some one-time work (website features, pages or transfers) and an estimated turnaround time will appear here.</p>')}
  if(id=='sup')h+=`<h2>IT support</h2><label>Support style</label>${sel('sup',{adhoc:'Ad hoc – pay for tech support as needed',managed:'Managed – monthly hour bank'},';go(S.i)')}
@@ -358,17 +417,17 @@ function go(i){const st=$('step'),ae=document.activeElement;let idx=-1,pos=null;
  firstGo=false;linkLabels()}
 function go0(i){S.i=i;save();$('step').innerHTML='<div class="card">'+body(STEPS[i][0])+(STEPS[i][0]=='rev'?'':`<div class="btns"><button class="g" ${i?'':'disabled'} onclick="go(${i-1})">Back</button><button class="b" onclick="go(${i+1})">Next</button></div>`)+'</div>';
  $('nav').innerHTML=STEPS.map((s,j)=>`<button class="${j==i?'on':''} ${S.skip[s[0]]?'skip':''}" ${j==i?'aria-current="step"':''} onclick="go(${j})">${j+1}. ${s[1]}${S.skip[s[0]]?' (skipped)':''}</button>`).join('');upd();Q()}
-function rows(r,m){const cell=l=>l.tbc?'On request':l.once?f(l.once)+'<span class="tag"> one-time</span>':l.mo?f(l.mo)+'<span class="tag"> per month, ongoing</span>':f(l.yr)+'<span class="tag"> per year, ongoing</span>';
- const line=l=>`<tr><td>${l.n}${l.d?`<div class="note">${l.d}</div>`:''}</td><td class="r">${cell(l)}</td>${m?`<td class="r m">${l.tbc?'':f((l.once||l.yr)-(l.cost||0))}</td>`:''}</tr>`;
+function rows(r,m){const lo=l=>l.lo||l,cell=l=>l.tbc?'On request':l.once?fr(lo(l).once,l.once)+'<span class="tag"> one-time</span>':l.mo?fr(lo(l).mo,l.mo)+'<span class="tag"> per month, ongoing</span>':fr(lo(l).yr,l.yr)+'<span class="tag"> per year, ongoing</span>';
+ const line=l=>`<tr><td>${l.n}${l.d?`<div class="note">${l.d}</div>`:''}</td><td class="r">${cell(l)}</td>${m?`<td class="r m">${l.tbc?'':fr((lo(l).once||lo(l).yr)-(lo(l).cost||0),(l.once||l.yr)-(l.cost||0))}</td>`:''}</tr>`;
  const g=(t,a)=>a.length?`<tr><th colspan="${m?3:2}">${t}</th></tr>`+a.map(line).join(''):'';
  return g('One-time setup fees (pay once)',r.L.filter(l=>!l.tbc&&l.once))+g('Ongoing fees (monthly or yearly)',r.L.filter(l=>!l.tbc&&!l.once&&(l.yr||l.mo)))+g('Quoted separately',r.L.filter(l=>l.tbc))}
-function totals(r){const all=r.once+r.yr;return `<tr class="tot"><td>One-time setup fees, total</td><td class="r">${f(r.once)}</td></tr><tr class="tot"><td>Ongoing fees, total per year (≈ ${f(r.mo)} per month)</td><td class="r">${f(r.yr)}</td></tr><tr><td class="note">Includes GST of</td><td class="r note">${f(all/11)}</td></tr>`}
+function totals(r){return `<tr class="tot"><td>One-time setup fees, total</td><td class="r">${fr(r.onceLo,r.once)}</td></tr><tr class="tot"><td>Ongoing fees, total per year (≈ ${fr(r.yrLo/12,r.yr/12)} per month)</td><td class="r">${fr(r.yrLo,r.yr)}</td></tr><tr class="tot"><td>First year total (setup + 12 months)</td><td class="r">${fr(r.onceLo+r.yrLo,r.once+r.yr)}</td></tr><tr><td class="note">Includes GST of about</td><td class="r note">${fr((r.onceLo+r.yrLo)/11,(r.once+r.yr)/11)}</td></tr>`}
 function ppNotes(){
  const ph=C.prot.home,pb=C.prot.biz,pm=C.prot.mob,set=(id,t)=>{const e=$(id);if(e)e.innerHTML=t};
  const h=pHome(S.home),b=pBiz(S.biz),m=pMob(S.mob);
- set('pp-home',(h?`<b class="price">${f(h.total)} per year (ongoing)</b> for ${S.home} (${h.d}). `:'')+`1 licence ${f(ph.start)}; each extra licence takes ${f(ph.step)} off every licence, down to ${f(ph.min)} each.`);
- set('pp-biz',(b?`<b class="price">${f(b.total)} per year (ongoing)</b> for ${S.biz} (${b.d}). `:'')+`1–${pb.minDev} devices ${f(pb.base)} in total; then about ${f(pb.base/pb.minDev)} for each additional device.`);
- set('pp-mob',(m?`<b class="price">${f(m.total)} per year (ongoing)</b> for ${S.mob} (${m.d}). `:'')+`${f(pm.single)} each, or ${pm.size} devices for ${f(pm.pack)}. Two devices cost the same as a ${pm.size}-pack.`)}
+ set('pp-home',(h?`<b class="price">${lpR(h.total)} per year (ongoing)</b> for ${S.home} (${h.d}). `:'')+`1 licence ${f(ph.start)}; each extra licence takes ${f(ph.step)} off every licence, down to ${f(ph.min)} each.`);
+ set('pp-biz',(b?`<b class="price">${lpR(b.total)} per year (ongoing)</b> for ${S.biz} (${b.d}). `:'')+`1–${pb.minDev} devices ${f(pb.base)} in total; then about ${f(pb.base/pb.minDev)} for each additional device.`);
+ set('pp-mob',(m?`<b class="price">${lpR(m.total)} per year (ongoing)</b> for ${S.mob} (${m.d}). `:'')+`${f(pm.single)} each, or ${pm.size} devices for ${f(pm.pack)}. Two devices cost the same as a ${pm.size}-pack.`)}
 function upd(){const r=calc();let h='<h2>Your estimate</h2>';
  h+=r.L.length?`<table>${rows(r,1)}${totals(r)}</table>`:'<p class="note">Choose options to build your estimate.</p>';
  if(r.t)h+=`<p class="note"><b>Estimated turnaround:</b> ${turnTxt(r.t)}</p>`;
@@ -376,18 +435,20 @@ function upd(){const r=calc();let h='<h2>Your estimate</h2>';
  if(r.dep)h+=depSide(r.dep);
  if(!S.skip.sup&&S.sup=='managed'&&S.bank>0){const ad=S.hrs*C.rate,bank=S.bank*C.rate*(1-(C.prepay[S.term]||0)),over=Math.max(0,S.hrs-S.bank)*C.rate,tot=bank+over+(S.roll?rollMo():0);
   h+=`<div class="cmp"><div class="${ad<=tot?'win':''}">Ad hoc<br><b>${f(ad)}/mo</b></div><div class="${tot<ad?'win':''}">Hour bank + extra hours<br><b>${f(tot)}/mo</b></div></div><p class="note">At ${S.hrs} hour(s) a month. A bank only saves money if you use most of it.</p>`}
- if(document.body.classList.contains('marg')){const T=r.once+r.yr,c=r.cost1+r.costY;h+=`<div class="m"><h3>Margin view</h3><table><tr><td>Revenue</td><td class="r">${f(T)}</td></tr><tr><td>Cost (labour at ${f(C.floor)}/hr floor, licences undiscounted)</td><td class="r">${f(c)}</td></tr><tr><td>Margin</td><td class="r">${f(T-c)} (${T?Math.round((T-c)/T*100):0}%)</td></tr></table>${(()=>{const w=r.L.filter(l=>l.web).reduce((a,l)=>a+l.yr,0)/12;return w?`<p class="note">Market check: Australian care plans run from about $97/month with hosting (low end) to $200–$600/month for agencies. This quote's hosting + management is ${f(w)}/month.</p>`:''})()}${S.mgmt&&!S.skip.host?(()=>{const m=mgmtCalc(),e=m.mo/m.incl;return `<p class="note">Management: ${f(m.mo)}/month for ${hrsTxt(m.incl)} = ${f(e)}/hr if all included time is used, ${f(m.mo/m.H)}/hr at expected use (floor ${f(C.floor)}/hr).${e<C.floor?' <b>Below your minimum rate if the client uses all included time.</b>':''}</p>`})():''}<p class="note">Retail = cost × ${C.mark}, rounded up (volume protection prices are set manually). Labour cost = 50% of price (${f(C.floor)}/hr of ${f(C.rate)}).</p></div>`}
+ if(document.body.classList.contains('marg')){const T=r.once+r.yr,c=r.cost1+r.costY,TL=r.onceLo+r.yrLo,cL=r.lo.cost1+r.lo.costY;h+=`<div class="m"><h3>Margin view</h3><table><tr><td>Low end of range: revenue ${f(TL)}, cost ${f(cL)}</td><td class="r">${f(TL-cL)} (${TL?Math.round((TL-cL)/TL*100):0}%)</td></tr><tr><td>Revenue (high end)</td><td class="r">${f(T)}</td></tr><tr><td>Cost (labour at ${f(C.floor)}/hr floor, licences undiscounted)</td><td class="r">${f(c)}</td></tr><tr><td>Margin</td><td class="r">${f(T-c)} (${T?Math.round((T-c)/T*100):0}%)</td></tr></table>${(()=>{const w=r.L.filter(l=>l.web).reduce((a,l)=>a+l.yr,0)/12;return w?`<p class="note">Market check: Australian care plans run from about $97/month with hosting (low end) to $200–$600/month for agencies. This quote's hosting + management is ${f(w)}/month.</p>`:''})()}${S.mgmt&&!S.skip.host?(()=>{const m=mgmtCalc(),e=m.mo/m.incl;return `<p class="note">Management: ${f(m.mo)}/month for ${hrsTxt(m.incl)} = ${f(e)}/hr if all included time is used, ${f(m.mo/m.H)}/hr at expected use (floor ${f(C.floor)}/hr).${e<C.floor?' <b>Below your minimum rate if the client uses all included time.</b>':''}</p>`})():''}<p class="note">Third-party retail = cost × ${C.passLo} to × ${C.passHi}, rounded up (volume protection prices are set manually). Labour cost = 50% of price (${f(C.floor)}/hr of ${f(C.rate)}).</p></div>`}
  $('sum').innerHTML=h;ppNotes();Q();announce(r);updateCta(r)}
 function Q(){const r=calc(),d=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
  const notes=[];
  if(!S.skip.host&&S.hosting!='none')notes.push('Website editing: '+EDIT[S.edit].toLowerCase()+(S.editors>1?' ('+S.editors+' editors)':'')+'.');
  if(!S.skip.xfer&&S.xprov.trim())notes.push('Transferring from: '+esc(S.xprov.trim())+'.');
+ if(!S.skip.dom&&S.domAct!='none')notes.push('<b>Domain:</b> '+esc(DOMACT[S.domAct])+(S.domWant.trim()?' – '+esc(S.domWant.trim()):'')+(S.domAct=='new'?' (Tony will check availability and confirm the name with you before registering).':'.'));
+ if(!S.skip.mail&&S.mail!='none'&&S.aliases.trim())notes.push('<b>Requested email aliases (free):</b> '+esc(S.aliases.trim())+'.');
  if(r.t){const t=r.t;notes.push('<b>Estimated turnaround for initial delivery:</b> '+turnTxt(t)+'.');if(!t.flex&&t.pct>0)notes.push('One-time labour includes a '+t.pct+'% loading for the faster timeframe.');if(t.pct<0)notes.push('One-time labour includes a '+Math.abs(t.pct)+'% discount for the longer timeframe.');if(t.below)notes.push('Delivery in under '+C.time.minDays+' working days must be confirmed by Tony before work is scheduled.');notes.push(TIMEDISC)}
  if(!S.skip.sup&&S.sup=='managed'&&S.hours=='x24')notes.push('<b>24/7 on-call:</b> '+f(x24Mo())+' per month on a '+C.x24.months+'-month minimum term ('+f(x24Total())+' over the minimum term). If the service ends early, the remaining months are payable.');
  if(!S.skip.sup&&S.sup=='managed'&&S.hours=='ext'&&S.extTimes.trim())notes.push('<b>Requested extended-hours availability:</b> '+esc(S.extTimes.trim()).replace(/\n/g,'<br>')+' (quoted separately).');
  const html=`<div class="sheet"><h2>Quote – Tony's Tech Support</h2><p>Anthony Gerald Shannon t/as Tony's Tech Support · ABN 89 792 481 545<br>0480 079 649 · tony@tonystechsupport.com.au · Hazelmere WA 6055</p>
  <p><b>Prepared for:</b> ${esc(S.client)||'__________________'} ${S.contact?'· '+esc(S.contact):''}<br><b>Date:</b> ${d} · <b>Valid for:</b> 30 days<br><b>Quote number:</b> ${qnum()}</p>
- <table><tr><th>Item</th><th class="r">Price (inc GST)</th></tr>${rows(r,0)}${totals(r)}</table>
+ <table><tr><th>Item</th><th class="r">Estimated price range (inc GST)</th></tr>${rows(r,0)}${totals(r)}</table>
  <p class="disc"><b>Estimate only:</b> ${DISC}</p>
  ${r.dep?depSheet(r.dep):''}
  ${notes.map(n=>`<p class="note">${n}</p>`).join('')}
@@ -409,34 +470,54 @@ function Q(){const r=calc(),d=new Date().toLocaleDateString('en-AU',{day:'numeri
  $('quote').innerHTML=html;const p=$('quote-prev');if(p)p.innerHTML=html}
 // ---- Call to action: build the PDF and open an email to Tony ----
 const TONY='tony@tonystechsupport.com.au';
-function updateCta(r){const e=$('ctaInfo');if(!e)return;const pb=$('payBox');if(pb&&!pb.hidden){if(r.dep)pb.innerHTML=payHtml(r.dep);else pb.hidden=true}const d=r.dep;e.innerHTML=(r.once+r.yr>0?'Your quote so far: <b>'+f(r.once)+'</b> one-time plus <b>'+f(r.yr)+'</b> per year'+(d?', deposit <b>'+f(d.tot)+'</b>':'')+(r.t?', estimated turnaround <b>'+(r.t.flex?'flexible, no deadline':r.t.days+' working days')+'</b>':'')+'. ':'Build your quote in the steps below, then press the button when you are ready. ')+'Pressing the button saves your quote as a PDF and opens an email to Tony. Attach the PDF and press send, and Tony will reply to confirm the details and arrange your deposit. Work starts when the deposit is received.'}
+function updateCta(r){const e=$('ctaInfo');if(!e)return;const pb=$('payBox');if(pb&&!pb.hidden){if(r.dep)pb.innerHTML=payHtml(r.dep);else pb.hidden=true}const d=r.dep;e.innerHTML=(r.once+r.yr>0?'Your quote so far: <b>'+fr(r.onceLo,r.once)+'</b> one-time plus <b>'+fr(r.yrLo,r.yr)+'</b> per year'+(d?', deposit <b>'+f(d.tot)+'</b>':'')+(r.t?', estimated turnaround <b>'+(r.t.flex?'flexible, no deadline':r.t.days+' working days')+'</b>':'')+'. ':'Build your quote in the steps below, then press the button when you are ready. ')+(FORM.key?'Pressing the button sends your quote straight to Tony. He will reply to confirm the details and final price, and arrange your deposit. Work starts when the deposit is received.':'Pressing the button saves your quote as a PDF and opens an email to Tony. Attach the PDF and press send, and Tony will reply to confirm the details and arrange your deposit. Work starts when the deposit is received.')}
 const pdfName=()=>'Quote '+qnum()+' - '+((S.client||'').replace(/[^\w .-]+/g,'').trim()||'Tonys Tech Support')+'.pdf';
 let pdfLib=null;
 function loadPdfLib(){if(window.html2pdf)return Promise.resolve();return pdfLib||(pdfLib=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';sc.onload=res;sc.onerror=()=>{pdfLib=null;rej(new Error('load'))};document.head.appendChild(sc)}))}
 async function makePdf(){await loadPdfLib();const host=document.createElement('div');host.style.cssText='position:absolute;left:-10000px;top:0;width:794px;background:#fff';host.innerHTML=$('quote').innerHTML;document.body.appendChild(host);
  try{return await html2pdf().set({margin:[10,10,12,10],image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['tr','.sig','.disc']}}).from(host.firstElementChild).outputPdf('blob')}finally{host.remove()}}
-function mailBody(r){const price=l=>l.tbc?'on request':l.once?f(l.once)+' one-time':l.mo?f(l.mo)+'/month':f(l.yr)+'/year',items=r.L.slice(0,25).map(l=>'- '+l.n+': '+price(l)).join('\n');
- return 'Hi Tony,\n\nI would like to go ahead with the quote I built on your website. The PDF quote is attached.\n\nQuote number: '+qnum()+'\nName: '+S.client.trim()+'\nContact: '+S.contact.trim()+'\n\nOne-time setup: '+f(r.once)+'\nOngoing: '+f(r.yr)+' per year (about '+f(r.mo)+' per month)'+(r.dep?'\nDeposit: '+f(r.dep.tot):'')+(r.t?'\nEstimated turnaround: '+turnTxt(r.t):'')+'\n\nItems:\n'+items+'\n\nEstimate only: '+DISC+'\n\nThanks,\n'+S.client.trim()}
+async function downloadPdf(){let blob=null;try{blob=await makePdf()}catch(e){}if(!blob){print();return}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
+const priceTxt=l=>{const o=l.lo||l;return l.tbc?'on request':l.once?frt(o.once,l.once)+' one-time':l.mo?frt(o.mo,l.mo)+'/month':frt(o.yr,l.yr)+'/year'};
+function detailTxt(){const x=[];
+ if(!S.skip.dom&&S.domAct!='none')x.push('Domain: '+DOMACT[S.domAct]+(S.domWant.trim()?' – '+S.domWant.trim():'')+(S.domAct=='new'||S.domAct=='xfer'?' (×'+S.dom+')':''));
+ if(!S.skip.mail&&S.mail!='none')x.push('Email: '+MAIL[S.mail].n+', '+S.users+' user(s)'+(S.aliases.trim()?'; aliases: '+S.aliases.trim():''));
+ if(!S.skip.xfer&&S.xprov.trim())x.push('Current provider(s): '+S.xprov.trim());
+ if(!S.skip.sup&&S.sup=='managed'&&S.hours=='ext'&&S.extTimes.trim())x.push('Requested extended hours: '+S.extTimes.trim());
+ return x.length?'\n\nDetails:\n'+x.map(s=>'- '+s).join('\n'):''}
+function mailBody(r,viaForm){const items=r.L.slice(0,30).map(l=>'- '+l.n+': '+priceTxt(l)).join('\n');
+ return 'Hi Tony,\n\nI would like to go ahead with the quote I built on your website.'+(viaForm?'':' The PDF quote is attached.')+'\n\nQuote number: '+qnum()+'\nName: '+S.client.trim()+'\nContact: '+S.contact.trim()+'\n\nOne-time setup: '+frt(r.onceLo,r.once)+'\nOngoing: '+frt(r.yrLo,r.yr)+' per year\nFirst year total: '+frt(r.onceLo+r.yrLo,r.once+r.yr)+(r.dep?'\nDeposit: '+f(r.dep.tot):'')+(r.t?'\nEstimated turnaround: '+turnTxt(r.t):'')+detailTxt()+'\n\nItems:\n'+items+'\n\nEstimate only: '+DISC+'\n\nThanks,\n'+S.client.trim()}
+// Sends to Tony through the form service. Resolves true on success, false if not set up or it failed.
+async function postForm(subject,text,pdf){if(!FORM.key)return false;
+ const c=S.contact.trim(),fd=new FormData();
+ fd.append('access_key',FORM.key);fd.append('subject',subject);fd.append('from_name',"TTS Quote Calculator");
+ fd.append('name',S.client.trim()||'(not given)');fd.append('contact',c||'(not given)');if(/\S+@\S+\.\S+/.test(c)){fd.append('email',c);fd.append('replyto',c)}
+ fd.append('quote_number',qnum());fd.append('message',text);fd.append('botcheck','');
+ if(pdf&&FORM.attach)fd.append('attachment',pdf,pdfName());
+ try{const res=await fetch(FORM.endpoint,{method:'POST',body:fd,headers:{Accept:'application/json'}});const j=await res.json().catch(()=>({}));return res.ok&&j.success!==false}catch(e){return false}}
 async function sendQuote(){const m=$('sendmsg'),b=$('sendbtn'),say=(t,bad)=>{m.className='note'+(bad?' warn':'');m.textContent=t};
  if(!S.client.trim()||S.contact.trim().length<5){say('Almost there: please fill in "Prepared for" and your contact email or phone in the Review & quote step below, then press the button again so Tony knows who to reply to.',1);go(STEPS.length-1);const i=$('step').querySelector('input');if(i)i.focus();return}
  const r=calc();if(!(r.once+r.yr>0)){say('Your quote is empty. Choose some options in the earlier steps first.',1);return}
- b.disabled=true;say('Creating your PDF…');let blob=null;
+ b.disabled=true;const pb=$('payBox'),showPay=()=>{if(pb&&r.dep){pb.innerHTML=payHtml(r.dep);pb.hidden=false}};
+ if(FORM.key){say('Sending your quote to Tony…');let pdf=null;if(FORM.attach){try{pdf=await makePdf()}catch(e){}}
+  const ok=await postForm('Quote request '+qnum()+' from '+S.client.trim(),mailBody(r,1),pdf);
+  if(ok){leaveOK=true;b.disabled=false;showPay();$('pdfAfter').hidden=false;say('Thanks! Your quote has been sent to Tony. He will be in touch to confirm the details and final price. Payment options for your deposit are shown below, and you can download a PDF copy for your records.');return}
+  say('Sending didn\'t work, so we\'ll open an email instead…',1)}
+ say('Creating your PDF…');let blob=null;
  try{blob=await makePdf()}catch(e){}
  if(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
  leaveOK=true;
- location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote request '+qnum()+' from '+S.client.trim())+'&body='+encodeURIComponent(mailBody(r));
- b.disabled=false;
- const pb=$('payBox');if(pb&&r.dep){pb.innerHTML=payHtml(r.dep);pb.hidden=false}
+ location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote request '+qnum()+' from '+S.client.trim())+'&body='+encodeURIComponent(mailBody(r,0));
+ b.disabled=false;showPay();
  say(blob?'Your PDF has been saved to your device and an email to Tony should be opening. Please attach the PDF and press send. Payment options for your deposit are shown below. If no email opens, write to '+TONY+' and attach the PDF.':'We could not create the PDF automatically. Please use "Print / save as PDF" above, then email it to '+TONY+'. An email with your quote summary should be opening now.')}
 // ---- Leaving the page part-way: offer to email what has been filled in ----
 let leaveOK=false,exitShown=false,exitPrev=null;
 function dirty(){if(leaveOK)return false;const r=calc();return !!(S.client.trim()||S.contact.trim()||r.once+r.yr>0)}
-function partialBody(){const r=calc(),price=l=>l.tbc?'on request':l.once?f(l.once)+' one-time':l.mo?f(l.mo)+'/month':f(l.yr)+'/year',items=r.L.slice(0,25).map(l=>'- '+l.n+': '+price(l)).join('\n'),nm=S.client.trim();
- return 'Hi Tony,\n\nI was looking at your quote calculator and would like to talk through my needs and get a quote tailored to me and my budget.\n\nName: '+(nm||'(please add)')+'\nContact: '+(S.contact.trim()||'(please add)')+(r.once+r.yr>0?'\n\nWhat I had chosen so far (not final):\nOne-time: '+f(r.once)+'\nOngoing: '+f(r.yr)+' per year\n\nItems:\n'+items+'\n\nEstimate only: '+DISC:'')+'\n\nThanks,\n'+nm}
+function partialBody(){const r=calc(),items=r.L.slice(0,25).map(l=>'- '+l.n+': '+priceTxt(l)).join('\n'),nm=S.client.trim();
+ return 'Hi Tony,\n\nI was looking at your quote calculator and would like to talk through my needs and get a quote tailored to me and my budget.\n\nName: '+(nm||'(please add)')+'\nContact: '+(S.contact.trim()||'(please add)')+(r.once+r.yr>0?'\n\nWhat I had chosen so far (not final):\nOne-time: '+frt(r.onceLo,r.once)+'\nOngoing: '+frt(r.yrLo,r.yr)+' per year\n\nItems:\n'+items+'\n\nEstimate only: '+DISC:'')+detailTxt()+'\n\nThanks,\n'+nm}
 function showExit(){if(exitShown||!dirty()||!$('reset').hidden)return;exitShown=true;exitPrev=document.activeElement;$('exitContact').value=S.contact||'';$('exit').hidden=false;$('exitSend').focus()}
 function closeExit(){$('exit').hidden=true;if(exitPrev&&exitPrev.focus)exitPrev.focus()}
 $('exitStay').onclick=closeExit;
-$('exitSend').onclick=()=>{const c=$('exitContact').value.trim();if(c){S.contact=c;save();Q()}leaveOK=true;location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':''))+'&body='+encodeURIComponent(partialBody());closeExit()};
+$('exitSend').onclick=async()=>{const c=$('exitContact').value.trim();if(c){S.contact=c;save();Q()}const sub='Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':'');if(FORM.key&&await postForm(sub,partialBody())){leaveOK=true;$('exitD').textContent='Thanks! Your details have been sent to Tony and he will be in touch soon.';$('exitSend').hidden=true;$('exitStay').textContent='Close';$('exitStay').focus();return}leaveOK=true;location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':''))+'&body='+encodeURIComponent(partialBody());closeExit()};
 document.addEventListener('mouseout',e=>{if(!e.relatedTarget&&e.clientY<=0)showExit()});
 addEventListener('keydown',e=>{const m=$('exit');if(m.hidden)return;if(e.key=='Escape'){closeExit();return}
  if(e.key=='Tab'){const x=[$('exitContact'),$('exitStay'),$('exitSend')],i=x.indexOf(document.activeElement);e.preventDefault();x[(i+(e.shiftKey?-1:1)+x.length)%x.length].focus()}});
