@@ -52,7 +52,7 @@ table{width:100%;border-collapse:collapse;font-size:.94rem}td,th{padding:7px 4px
 .price{font-weight:700;color:var(--acc)}.tag{font-weight:400;font-size:.8em;color:var(--mut)}th[colspan]{text-align:left;background:var(--acc2);font-size:.9rem}.sheet a{color:#8f2a0b}.sheet .tag{color:#444}.sheet th[colspan]{background:#eee}
 .m{display:none;color:var(--acc)}body.marg .m{display:table-cell}body.marg div.m{display:block}
 .stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.stepper input{width:7rem;text-align:center}.stepper button.g{min-width:3rem}
-.ctawrap{max-width:1100px;margin:12px auto 0;padding:0 20px}.cta{margin-top:0;padding:18px 20px;border:2px solid var(--acc);border-radius:12px;background:var(--acc2)}.cta h3{margin-top:0}.cta ol{padding-left:1.4rem;margin:8px 0 14px}.cta li{margin-bottom:4px}
+.ctawrap{max-width:1100px;margin:12px auto 0;padding:0 20px}.cta{margin:18px -8px 0;padding:16px;border:2px solid var(--acc);border-radius:10px;background:var(--acc2)}.cta h3{margin-top:0}.cta button.b{width:100%}.cta ol{padding-left:1.4rem;margin:8px 0 14px}.cta li{margin-bottom:4px}
 .beta{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;background:var(--acc2);padding:6px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;line-height:1.45}.beta p{margin:0;flex:1 1 18rem;color:var(--mut)}.beta .badge{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:999px;padding:0 .6em;margin-right:.4em;font-size:.8em;font-weight:700}.beta button.g{min-height:2.2rem;font-size:.85rem;padding:.2rem .8rem}
 .rng{white-space:nowrap}
 .disc{border:1px solid var(--line);border-left:5px solid var(--acc);background:var(--acc2);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:.95rem;line-height:1.5}.sheet .disc{background:#f6f6f6;border-color:#999;border-left-color:#8f2a0b;color:#111}
@@ -101,7 +101,7 @@ main{grid-template-columns:minmax(0,1fr) 22rem}
 @media(max-height:46rem){aside .card{position:static}}
 html[data-size="3"] aside .card{position:static}
 .sheet{font-size:1rem}
-.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px}
+.tools{margin:10px 0 2px;font-size:.9rem}.tools summary{cursor:pointer;display:inline-block;padding:.3rem .7rem;border:1.5px solid var(--fld);border-radius:999px;font-weight:700;list-style:none}.tools summary::-webkit-details-marker{display:none}.tools summary::before{content:"\25B8  "}.tools[open] summary::before{content:"\25BE  "}.toolsin{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}.toolsin button.g{min-height:2.4rem;font-size:.9rem;padding:.3rem .9rem}
 .tools .lbl{font-weight:700;margin-right:4px}
 .tools button[aria-pressed="true"]{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -116,13 +116,13 @@ html[data-size="3"] aside .card{position:static}
 @media print{html,html[data-size]{font-size:12pt!important}body{font:400 12pt/1.5 "Atkinson Hyperlegible",Arial,sans-serif;color:#000}.sheet{font-size:12pt}.sheet .note{color:#000;font-size:10.5pt}.terms{font-size:10.5pt}.skip-link,.tools,#live{display:none!important}}
 </style></head><body>
 <a class="skip-link" href="#step">Skip to the quote form</a><div id="live" class="sr" role="status" aria-live="polite"></div>
-<header><h1>Tony's Tech Support quote calculator</h1><p class="sub">Build a quote for your website, email, protection and IT support. Every section can be skipped. All prices include GST.</p><div class="tools" role="group" aria-label="Reading options"><span class="lbl">Text size:</span><button type="button" class="g" data-sz="1" onclick="setSize(1)" aria-pressed="true">Standard</button><button type="button" class="g" data-sz="2" onclick="setSize(2)" aria-pressed="false">Large</button><button type="button" class="g" data-sz="3" onclick="setSize(3)" aria-pressed="false">Extra large</button><button type="button" class="g" id="hc" onclick="togHC()" aria-pressed="false">High contrast: Off</button></div></header>
+<header><h1>Tony's Tech Support quote calculator</h1><p class="sub">Build a quote for your website, email, protection and IT support. Every section can be skipped. All prices include GST.</p><details class="tools noprint"><summary>Display options <span class="tag">(text size, contrast)</span></summary><div class="toolsin" role="group" aria-label="Display options"><span class="lbl">Text size:</span><button type="button" class="g" data-sz="1" onclick="setSize(1)" aria-pressed="true">Standard</button><button type="button" class="g" data-sz="2" onclick="setSize(2)" aria-pressed="false">Large</button><button type="button" class="g" data-sz="3" onclick="setSize(3)" aria-pressed="false">Extra large</button><button type="button" class="g" id="hc" onclick="togHC()" aria-pressed="false">High contrast: Off</button></div></details></header>
 <div class="ctawrap noprint" id="betaWrap"><div class="beta" id="betaNotice" role="note" aria-label="Beta notice"><p><span class="badge">Beta</span>This calculator is still being tested. Prices are estimated ranges only. I'll confirm the scope and final price with you before any work starts, and sending an estimate doesn't commit you to anything.</p><button type="button" class="g" id="betaOk" onclick="dismissBeta()" aria-label="Dismiss the beta notice">Got it</button></div></div>
 <script>try{if(sessionStorage.getItem('ttsBeta')==='1')document.getElementById('betaWrap').hidden=true}catch(e){}</script>
-<div class="ctawrap noprint"><div class="cta" id="cta"><h2>Ready to get started?</h2><p id="ctaInfo" class="note"></p><button id="sendbtn" type="button" class="b" onclick="sendQuote()">Send my quote to Tony</button><p class="note"><b>Please note:</b> sending your estimate is a request for review, not acceptance of a confirmed quote.</p><p id="sendmsg" class="note" role="status" aria-live="polite"></p><div id="payBox" class="rec" hidden></div><p id="pdfAfter" hidden><button type="button" class="g" onclick="downloadPdf()">Download a PDF copy for my records</button></p><p class="note">You can also email <a href="mailto:tony@tonystechsupport.com.au">tony@tonystechsupport.com.au</a> directly.</p></div></div>
 <nav class="steps" id="nav" aria-label="Quote steps"></nav>
-<main id="main"><section id="step" tabindex="-1" aria-label="Quote step"></section><aside aria-label="Your estimate"><div class="card" id="sum"></div></aside></main>
+<main id="main"><section id="step" tabindex="-1" aria-label="Quote step"></section><aside aria-label="Your estimate"><div class="card"><div id="sum"></div><div class="cta noprint" id="cta"><h3>Ready to get started?</h3><p id="ctaInfo" class="note"></p><button id="sendbtn" type="button" class="b" onclick="sendQuote()">Send my quote for review</button><p class="note">Tony will bundle together everything you've chosen and work out the best possible price for your needs. Sending is a request for review, not acceptance of a confirmed quote.</p><p id="sendmsg" class="note" role="status" aria-live="polite"></p><div id="payBox" class="rec" hidden></div><p id="pdfAfter" hidden><button type="button" class="g" onclick="downloadPdf()">Download a PDF copy for my records</button></p><p class="note">You can also email <a href="mailto:tony@tonystechsupport.com.au">tony@tonystechsupport.com.au</a> directly.</p></div></div></aside></main>
 <div id="exit" class="modal noprint" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exitT" aria-describedby="exitD"><h2 id="exitT">Before you go…</h2><p id="exitD">What you've filled in so far hasn't been sent to Tony, and your details aren't kept on his side if you leave. You can email what you've entered so far, and Tony will get in touch to talk through your needs in detail and put together a quote that suits you and your budget.</p><label for="exitContact">Best email or phone to reach you</label><input id="exitContact" type="text" autocomplete="email"><div class="btns"><button type="button" class="g" id="exitStay">Keep working on my quote</button><button type="button" class="b" id="exitSend">Email my details to Tony</button></div></div></div>
+<div id="msg" class="modal noprint" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="msgT"><h2 id="msgT" tabindex="-1"></h2><div id="msgB"></div><div class="btns" id="msgBtns"></div></div></div>
 <div id="reset" class="modal noprint" hidden><div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="resetT" aria-describedby="resetD"><h2 id="resetT">Start over?</h2><p id="resetD">This clears everything you've chosen and any details you've entered, and takes you back to step 1.</p><div class="btns"><button type="button" class="g" id="resetNo">Keep my quote</button><button type="button" class="b" id="resetYes">Yes, clear everything</button></div></div></div>
 <script>
 // ---- Beta disclaimer: one wording, reused in the estimate panel, the PDF/print sheet and both emails ----
@@ -155,7 +155,7 @@ let RM='hi';
 const pick=a=>Array.isArray(a)?(RM=='lo'?a[0]:a[1]):a;
 const up=c=>Math.ceil(c*(RM=='lo'?C.passLo:C.passHi)-1e-9); // -1e-9 stops floating-point noise (e.g. 35.2*1.25) rounding an exact dollar up
 const lp=x=>RM=='lo'?Math.ceil(x*C.passLo/C.passHi-1e-9):x; // low end of a hand-set third-party price
-const cl=x=>Math.ceil(x-1e-9);
+const cl=x=>Math.max(0,Math.ceil(x-1e-9));
 const fr=(a,b)=>{a=cl(a);b=cl(b);if(b<a)[a,b]=[b,a];return a==b?f(a):'<span class="rng">'+f(a)+'–'+f(b)+'</span>'};
 const frt=(a,b)=>fr(a,b).replace(/<[^>]+>/g,''); // plain-text range for emails
 const frr=a=>fr(a[0],a[1]);
@@ -182,7 +182,7 @@ const DESC={
   ot:'Wix, GoDaddy, an existing host or something else. Tony will quote hosting and set-up separately.'}};
 const EDIT={tony:'Tony makes all the edits',mix:'Some pages edited by the client, the rest by Tony',client:'The client edits everything'};
 const STEPS=[['dom','Domain'],['mail','Email'],['site','Website scope'],['host','Hosting & management'],['xfer','Transfers & migration'],['time','Timeline'],['sup','IT support'],['prot','Protection'],['rev','Review & quote']];
-let S={i:0,skip:{},client:'',contact:'',domAct:'none',domWant:'',dom:1,aliases:'',web:'none',mail:'none',users:1,hosting:'none',edit:'tony',editors:1,mgmt:false,html:'no',xdom:0,xmail:0,xhost:false,xpages:0,xprov:'',pages:0,feat:{},tbc:{},base:false,time:'normal',sup:'adhoc',people:1,devs:1,hrs:0.5,hrsAuto:true,days:null,qts:0,extTimes:'',roll:false,rollHrs:1,bank:0,term:0,hours:'bh',resp:'std',ah:false,visits:0,km:'',home:0,biz:0,mob:0};
+let S={i:0,skip:{},client:'',contact:'',budget:'',domAct:'none',domWant:'',dom:1,aliases:'',web:'none',mail:'none',users:1,hosting:'none',edit:'tony',editors:1,mgmt:false,html:'no',xdom:0,xmail:0,xhost:false,xpages:0,xprov:'',pages:0,feat:{},tbc:{},base:false,time:'normal',sup:'adhoc',people:1,devs:1,hrs:0.5,hrsAuto:true,days:null,qts:0,extTimes:'',roll:false,rollHrs:1,bank:0,term:0,hours:'bh',resp:'std',ah:false,visits:0,km:'',home:0,biz:0,mob:0};
 try{const x=localStorage.getItem('tts2');if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
 if(S.hosting=='sq')S.hosting='sqb';
 // migrate quotes saved by the older version
@@ -294,7 +294,7 @@ function qnum(){const P=new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Per
  const e=x=>x.toString(36).toUpperCase().padStart(7,'0').slice(-4);
  return P.year+P.month+P.day+P.hour+P.minute+(k=='|'?'00000000':e(h)+e(g))}
 function payHtml(d){const P=C.pay,q=qnum(),r=(a,b)=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`;
- return `<h3>How to pay your deposit of ${f(d.tot)}</h3><table>${r('PayID',P.payid)}${r('Bank transfer',P.bank+'<br>BSB: '+P.bsb+'<br>Account: '+P.acc+'<br>Reference: '+q)}${r('Card',P.card)}${r('PayPal','<a href="https://'+P.paypal+'" target="_blank" rel="noopener">'+P.paypal+'</a>')}${r('Cash',P.cash)}</table><p class="note">Please use <b>${q}</b> as your payment reference (for PayID and PayPal, put it in the message or note). Please send Tony a screenshot of your payment once it has been made.</p>`}
+ return `<h3>How to pay your deposit of ${f(d.tot)}</h3><table>${r('PayID',P.payid)}${r('Bank transfer',P.bank+'<br>BSB: '+P.bsb+'<br>Account: '+P.acc+'<br>Reference: '+q)}${r('PayPal','<a href="https://'+P.paypal+'" target="_blank" rel="noopener">'+P.paypal+'</a>')}${r('Cash or card payments',P.cash)}</table><p class="note">Please use <b>${q}</b> as your payment reference (for PayID and PayPal, put it in the message or note). Please send Tony a screenshot of your payment once it has been made.</p>`}
 const DEPNOTE='Work and the estimated turnaround begin when the deposit is received, and the deposit is credited in full to your final invoice. The non-refundable fee is kept if the job is cancelled. The upfront costs part is refunded if those items have not yet been purchased.';
 function depSide(d){return `<div class="rec"><b>Deposit to start: ${f(d.tot)}</b><p>${d.a?f(d.a)+' upfront costs for licences and hosting I pay for at the start. ':''}${f(d.n)} non-refundable fee.</p></div>`}
 function depSheet(d){const row=(t,v)=>v?`<tr><td>${t}</td><td class="r">${f(v)}</td></tr>`:'';return `<h3>Deposit due before work starts</h3><table>${row('Upfront costs for licences and hosting paid at the start (inc GST)',d.a)}${row('Non-refundable fee (domain registration and booking/set-up costs)',d.n)}<tr class="tot"><td>Deposit required</td><td class="r">${f(d.tot)}</td></tr></table><p class="note">${DEPNOTE}</p>${payHtml(d)}`}
@@ -405,8 +405,8 @@ function body(id){
   <label>Windows PCs – Emsisoft Anti-Malware Home (per year)</label>${num('home',0,0)}<p class="note" id="pp-home"></p>
   <label>Windows business devices – Emsisoft Business Security (per year)</label>${num('biz')}<p class="note" id="pp-biz"></p>
   <label>Android devices – Emsisoft Mobile Security (per year)</label>${num('mob')}<p class="note" id="pp-mob"></p>`}
- if(id=='rev')h+=`<h2>Review & quote</h2><label>Prepared for</label><input value="${esc(S.client)}" oninput="S.client=this.value;save();Q()"><label>Contact email / phone</label><input value="${esc(S.contact)}" oninput="S.contact=this.value;save();Q()">
-  <div class="btns noprint"><button class="g" onclick="askReset()">Start over</button><button class="b" onclick="print()">Print / save as PDF</button></div><div id="quote-prev"></div>`;
+ if(id=='rev')h+=`<h2>Review & quote</h2><label>Prepared for</label><input value="${esc(S.client)}" oninput="S.client=this.value;save();Q()"><label>Contact email / phone</label><input value="${esc(S.contact)}" oninput="S.contact=this.value;save();Q()"><label for="budget">Your budget (optional)</label><input id="budget" value="${esc(S.budget)}" placeholder="e.g. $500, or about $50 a month" oninput="S.budget=this.value;save();Q()"><p class="note">Have a budget in mind? Let Tony know and he'll work out the best options to fit it. Leave it blank if you're not sure.</p>
+  <div class="btns noprint" style="justify-content:flex-start"><button class="g" onclick="askReset()">Start over</button><button class="b" id="sendbtn2" onclick="sendQuote()">Send my quote for review</button><button class="g" onclick="print()">Print / save as PDF</button></div><p id="sendmsg2" class="note noprint" role="status" aria-live="polite"></p><div id="quote-prev"></div>`;
  return h}
 const FOC='input,select,textarea,button,a[href]';let lastI=-1,firstGo=true;
 function go(i){const st=$('step'),ae=document.activeElement;let idx=-1,pos=null;
@@ -440,6 +440,7 @@ function upd(){const r=calc();let h='<h2>Your estimate</h2>';
 function Q(){const r=calc(),d=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
  const notes=[];
  if(!S.skip.host&&S.hosting!='none')notes.push('Website editing: '+EDIT[S.edit].toLowerCase()+(S.editors>1?' ('+S.editors+' editors)':'')+'.');
+  if(S.budget.trim())notes.push('<b>Client budget:</b> '+esc(S.budget.trim())+'.');
  if(!S.skip.xfer&&S.xprov.trim())notes.push('Transferring from: '+esc(S.xprov.trim())+'.');
  if(!S.skip.dom&&S.domAct!='none')notes.push('<b>Domain:</b> '+esc(DOMACT[S.domAct])+(S.domWant.trim()?' – '+esc(S.domWant.trim()):'')+(S.domAct=='new'?' (Tony will check availability and confirm the name with you before registering).':'.'));
  if(!S.skip.mail&&S.mail!='none'&&S.aliases.trim())notes.push('<b>Requested email aliases (free):</b> '+esc(S.aliases.trim())+'.');
@@ -470,7 +471,7 @@ function Q(){const r=calc(),d=new Date().toLocaleDateString('en-AU',{day:'numeri
  $('quote').innerHTML=html;const p=$('quote-prev');if(p)p.innerHTML=html}
 // ---- Call to action: build the PDF and open an email to Tony ----
 const TONY='tony@tonystechsupport.com.au';
-function updateCta(r){const e=$('ctaInfo');if(!e)return;const pb=$('payBox');if(pb&&!pb.hidden){if(r.dep)pb.innerHTML=payHtml(r.dep);else pb.hidden=true}const d=r.dep;e.innerHTML=(r.once+r.yr>0?'Your quote so far: <b>'+fr(r.onceLo,r.once)+'</b> one-time plus <b>'+fr(r.yrLo,r.yr)+'</b> per year'+(d?', deposit <b>'+f(d.tot)+'</b>':'')+(r.t?', estimated turnaround <b>'+(r.t.flex?'flexible, no deadline':r.t.days+' working days')+'</b>':'')+'. ':'Build your quote in the steps below, then press the button when you are ready. ')+(FORM.key?'Pressing the button sends your quote straight to Tony. He will reply to confirm the details and final price, and arrange your deposit. Work starts when the deposit is received.':'Pressing the button saves your quote as a PDF and opens an email to Tony. Attach the PDF and press send, and Tony will reply to confirm the details and arrange your deposit. Work starts when the deposit is received.')}
+function updateCta(r){const e=$('ctaInfo');if(!e)return;const pb=$('payBox');if(pb&&!pb.hidden){if(r.dep)pb.innerHTML=payHtml(r.dep);else pb.hidden=true}const d=r.dep;e.innerHTML=(r.once+r.yr>0?'Your quote so far: <b>'+fr(r.onceLo,r.once)+'</b> one-time plus <b>'+fr(r.yrLo,r.yr)+'</b> per year'+(d?', deposit <b>'+f(d.tot)+'</b>':'')+(r.t?', estimated turnaround <b>'+(r.t.flex?'flexible, no deadline':r.t.days+' working days')+'</b>':'')+'. ':'Build your quote in the steps below, then press the button when you are ready. ')+(FORM.key?'Pressing the button sends your quote straight to Tony for review. He will reply to confirm the details and final price, and arrange your deposit. Work starts when the deposit is received.':'Pressing the button saves your quote as a PDF and opens an email to Tony. Attach the PDF and press send, and Tony will reply to confirm the details and arrange your deposit. Work starts when the deposit is received.')}
 const pdfName=()=>'Quote '+qnum()+' - '+((S.client||'').replace(/[^\w .-]+/g,'').trim()||'Tonys Tech Support')+'.pdf';
 let pdfLib=null;
 function loadPdfLib(){if(window.html2pdf)return Promise.resolve();return pdfLib||(pdfLib=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';sc.onload=res;sc.onerror=()=>{pdfLib=null;rej(new Error('load'))};document.head.appendChild(sc)}))}
@@ -479,6 +480,7 @@ async function makePdf(){await loadPdfLib();const host=document.createElement('d
 async function downloadPdf(){let blob=null;try{blob=await makePdf()}catch(e){}if(!blob){print();return}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
 const priceTxt=l=>{const o=l.lo||l;return l.tbc?'on request':l.once?frt(o.once,l.once)+' one-time':l.mo?frt(o.mo,l.mo)+'/month':frt(o.yr,l.yr)+'/year'};
 function detailTxt(){const x=[];
+ if(S.budget.trim())x.push('Budget: '+S.budget.trim());
  if(!S.skip.dom&&S.domAct!='none')x.push('Domain: '+DOMACT[S.domAct]+(S.domWant.trim()?' – '+S.domWant.trim():'')+(S.domAct=='new'||S.domAct=='xfer'?' (×'+S.dom+')':''));
  if(!S.skip.mail&&S.mail!='none')x.push('Email: '+MAIL[S.mail].n+', '+S.users+' user(s)'+(S.aliases.trim()?'; aliases: '+S.aliases.trim():''));
  if(!S.skip.xfer&&S.xprov.trim())x.push('Current provider(s): '+S.xprov.trim());
@@ -494,27 +496,35 @@ async function postForm(subject,text,pdf){if(!FORM.key)return false;
  fd.append('quote_number',qnum());fd.append('message',text);fd.append('botcheck','');
  if(pdf&&FORM.attach)fd.append('attachment',pdf,pdfName());
  try{const res=await fetch(FORM.endpoint,{method:'POST',body:fd,headers:{Accept:'application/json'}});const j=await res.json().catch(()=>({}));return res.ok&&j.success!==false}catch(e){return false}}
-async function sendQuote(){const m=$('sendmsg'),b=$('sendbtn'),say=(t,bad)=>{m.className='note'+(bad?' warn':'');m.textContent=t};
- if(!S.client.trim()||S.contact.trim().length<5){say('Almost there: please fill in "Prepared for" and your contact email or phone in the Review & quote step below, then press the button again so Tony knows who to reply to.',1);go(STEPS.length-1);const i=$('step').querySelector('input');if(i)i.focus();return}
- const r=calc();if(!(r.once+r.yr>0)){say('Your quote is empty. Choose some options in the earlier steps first.',1);return}
- b.disabled=true;const pb=$('payBox'),showPay=()=>{if(pb&&r.dep){pb.innerHTML=payHtml(r.dep);pb.hidden=false}};
- if(FORM.key){say('Sending your quote to Tony…');let pdf=null;if(FORM.attach){try{pdf=await makePdf()}catch(e){}}
-  const ok=await postForm('Quote request '+qnum()+' from '+S.client.trim(),mailBody(r,1),pdf);
-  if(ok){leaveOK=true;b.disabled=false;showPay();$('pdfAfter').hidden=false;say('Thanks! Your quote has been sent to Tony. He will be in touch to confirm the details and final price. Payment options for your deposit are shown below, and you can download a PDF copy for your records.');return}
-  say('Sending didn\'t work, so we\'ll open an email instead…',1)}
- say('Creating your PDF…');let blob=null;
- try{blob=await makePdf()}catch(e){}
- if(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
- leaveOK=true;
- location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote request '+qnum()+' from '+S.client.trim())+'&body='+encodeURIComponent(mailBody(r,0));
- b.disabled=false;showPay();
- say(blob?'Your PDF has been saved to your device and an email to Tony should be opening. Please attach the PDF and press send. Payment options for your deposit are shown below. If no email opens, write to '+TONY+' and attach the PDF.':'We could not create the PDF automatically. Please use "Print / save as PDF" above, then email it to '+TONY+'. An email with your quote summary should be opening now.')}
+// ---- Pop-up messages (sent / couldn't send) ----
+let msgPrev=null,msgActs=[];
+function showMsg(title,html,btns){msgPrev=document.activeElement;$('msgT').textContent=title;$('msgB').innerHTML=html;msgActs=btns;
+ $('msgBtns').innerHTML=btns.map((b,i)=>`<button type="button" class="${b.main?'b':'g'}" onclick="msgDo(${i})">${b.t}</button>`).join('');$('msg').hidden=false;$('msgT').focus()}
+function closeMsg(){$('msg').hidden=true;if(msgPrev&&msgPrev.focus&&document.contains(msgPrev))msgPrev.focus()}
+function msgDo(i){const a=msgActs[i];if(!a.keep)closeMsg();if(a.fn)a.fn()}
+addEventListener('keydown',e=>{const m=$('msg');if(m.hidden)return;if(e.key=='Escape'){closeMsg();return}
+ if(e.key=='Tab'){const x=[...m.querySelectorAll('button,a[href],input')];if(!x.length)return;const i=x.indexOf(document.activeElement);e.preventDefault();x[(i+(e.shiftKey?-1:1)+x.length)%x.length].focus()}});
+const PHONE='0480 079 649';
+function openMail(r){leaveOK=true;location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote request '+qnum()+' from '+S.client.trim())+'&body='+encodeURIComponent(mailBody(r,0))}
+function failMsg(r,why){showMsg('Your quote hasn\'t been sent yet',
+ `<p>${why||'We couldn\'t send your quote automatically. This is usually a short internet drop-out, or an ad or privacy blocker in your browser.'}</p><p><b>To send it to Tony another way:</b></p><ol><li>Press <b>Download my PDF</b> to save your quote.</li><li>Press <b>Open an email to Tony</b>. An email with your quote summary will open in your email app.</li><li>Attach the PDF you saved and press send.</li></ol><p class="note">No email app? Email the PDF to <a href="mailto:${TONY}">${TONY}</a> from your usual email, or call or text Tony on <a href="tel:${PHONE.replace(/ /g,'')}">${PHONE}</a>. You can also try the send button again in a minute.</p>`,
+ [{t:'Download my PDF',keep:1,fn:downloadPdf},{t:'Open an email to Tony',fn:()=>openMail(r)},{t:'Try sending again',main:1,fn:sendQuote}])}
+async function sendQuote(){const bs=[$('sendbtn'),$('sendbtn2')].filter(Boolean),b={set disabled(v){bs.forEach(x=>x.disabled=v)}},say=(t,bad)=>{['sendmsg','sendmsg2'].forEach(id=>{const m=$(id);if(m){m.className='note'+(bad?' warn':'');m.textContent=t}})};
+ if(!S.client.trim()||S.contact.trim().length<5){say('');showMsg('A couple of details are needed',`<p>Before your quote can be sent, Tony needs to know who it's for and how to reach you.</p><p>Please fill in <b>Prepared for</b> (your name or business) and your <b>contact email or phone</b> in the Review &amp; quote step, then press <b>Send my quote for review</b> again.</p>`,[{t:'Take me there',main:1,fn:()=>{go(STEPS.length-1);const i=[...$('step').querySelectorAll('input')].find(x=>!x.value.trim())||$('step').querySelector('input');if(i)i.focus()}}]);return}
+ const r=calc();if(!(r.once+r.yr>0)){showMsg('Your quote is empty',`<p>Choose at least one option in the earlier steps (for example a domain, email or website), then press <b>Send my quote for review</b> again.</p><p class="note">Not sure what you need? Call or text Tony on <a href="tel:${PHONE.replace(/ /g,'')}">${PHONE}</a> and he can talk it through with you.</p>`,[{t:'Go to step 1',main:1,fn:()=>go(0)}]);return}
+ if(!FORM.key){failMsg(r,'Automatic sending isn\'t set up on this page yet.');return}
+ b.disabled=true;say('Sending your quote to Tony…');let pdf=null;if(FORM.attach){try{pdf=await makePdf()}catch(e){}}
+ const ok=await postForm('Quote request '+qnum()+' from '+S.client.trim(),mailBody(r,1),pdf);b.disabled=false;
+ if(!ok){say('Your quote hasn\'t been sent yet.',1);failMsg(r);return}
+ leaveOK=true;say('Your quote has been sent to Tony for review.');$('pdfAfter').hidden=false;const pb=$('payBox');if(pb&&r.dep){pb.innerHTML=payHtml(r.dep);pb.hidden=false}
+ showMsg('Thanks! Your quote has been sent',`<p>Tony has received your quote (number <b>${qnum()}</b>). He'll bundle together everything you've chosen, work out the best possible price for your needs, and be in touch with an official quote.</p>`+(r.dep?`<div class="rec"><b>Need the work done ASAP?</b><p>You can pay the deposit of <b>${f(r.dep.tot)}</b> now to secure your spot, and Tony will start as soon as it's received. Otherwise, there's no need to pay anything yet. Just wait for your official quote.</p></div>${payHtml(r.dep)}`:'')+`<p class="note">You can download a PDF copy of your estimate for your records.</p>`,
+  [{t:'Download a PDF copy',keep:1,fn:downloadPdf},{t:'Close',main:1}])}
 // ---- Leaving the page part-way: offer to email what has been filled in ----
 let leaveOK=false,exitShown=false,exitPrev=null;
 function dirty(){if(leaveOK)return false;const r=calc();return !!(S.client.trim()||S.contact.trim()||r.once+r.yr>0)}
 function partialBody(){const r=calc(),items=r.L.slice(0,25).map(l=>'- '+l.n+': '+priceTxt(l)).join('\n'),nm=S.client.trim();
  return 'Hi Tony,\n\nI was looking at your quote calculator and would like to talk through my needs and get a quote tailored to me and my budget.\n\nName: '+(nm||'(please add)')+'\nContact: '+(S.contact.trim()||'(please add)')+(r.once+r.yr>0?'\n\nWhat I had chosen so far (not final):\nOne-time: '+frt(r.onceLo,r.once)+'\nOngoing: '+frt(r.yrLo,r.yr)+' per year\n\nItems:\n'+items+'\n\nEstimate only: '+DISC:'')+detailTxt()+'\n\nThanks,\n'+nm}
-function showExit(){if(exitShown||!dirty()||!$('reset').hidden)return;exitShown=true;exitPrev=document.activeElement;$('exitContact').value=S.contact||'';$('exit').hidden=false;$('exitSend').focus()}
+function showExit(){if(exitShown||!dirty()||!$('reset').hidden||!$('msg').hidden)return;exitShown=true;exitPrev=document.activeElement;$('exitContact').value=S.contact||'';$('exit').hidden=false;$('exitSend').focus()}
 function closeExit(){$('exit').hidden=true;if(exitPrev&&exitPrev.focus)exitPrev.focus()}
 $('exitStay').onclick=closeExit;
 $('exitSend').onclick=async()=>{const c=$('exitContact').value.trim();if(c){S.contact=c;save();Q()}const sub='Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':'');if(FORM.key&&await postForm(sub,partialBody())){leaveOK=true;$('exitD').textContent='Thanks! Your details have been sent to Tony and he will be in touch soon.';$('exitSend').hidden=true;$('exitStay').textContent='Close';$('exitStay').focus();return}leaveOK=true;location.href='mailto:'+TONY+'?subject='+encodeURIComponent('Quote enquiry: let\'s discuss my needs'+(S.client.trim()?' ('+S.client.trim()+')':''))+'&body='+encodeURIComponent(partialBody());closeExit()};
@@ -523,7 +533,7 @@ addEventListener('keydown',e=>{const m=$('exit');if(m.hidden)return;if(e.key=='E
  if(e.key=='Tab'){const x=[$('exitContact'),$('exitStay'),$('exitSend')],i=x.indexOf(document.activeElement);e.preventDefault();x[(i+(e.shiftKey?-1:1)+x.length)%x.length].focus()}});
 addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue=''}});
 // ---- Beta notice: dismiss for the rest of this visit (comes back next visit; the short disclaimers always stay) ----
-function dismissBeta(){const w=$('betaWrap');if(w)w.hidden=true;try{sessionStorage.setItem('ttsBeta','1')}catch(e){}const c=$('cta'),h=c&&c.querySelector('h2');if(h){h.tabIndex=-1;h.focus()}}
+function dismissBeta(){const w=$('betaWrap');if(w)w.hidden=true;try{sessionStorage.setItem('ttsBeta','1')}catch(e){}const h=$('step').querySelector('h2');if(h){h.tabIndex=-1;h.focus()}}
 // ---- Start over: in-page confirmation (native confirm() and the browser's leave-page prompt can be blocked or cancelled) ----
 let resetPrev=null;
 function askReset(){resetPrev=document.activeElement;$('reset').hidden=false;$('resetNo').focus()}
